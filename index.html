@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReVolt India — Carbon-Neutral Campus</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00e676;
+    --green-dim: #00c853;
+    --green-glow: rgba(0,230,118,0.18);
+    --green-glow2: rgba(0,230,118,0.08);
+    --navy: #0a0f1e;
+    --navy2: #101828;
+    --navy3: #1a2540;
+    --navy4: #233050;
+    --white: #f4f9f4;
+    --gray: #8fa3b1;
+    --card-bg: rgba(26,37,64,0.85);
+    --border: rgba(0,230,118,0.13);
+    --orange: #ff9800;
+    --blue: #64b5f6;
+    --purple: #ce93d8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 36px;
+    background: rgba(10,15,30,0.97);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(14px);
+    gap: 12px; flex-wrap: wrap;
+  }
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--green); letter-spacing: -1px;
+    white-space: nowrap;
+  }
+  .logo span { color: var(--white); }
+  .logo-sub { font-size: 0.6rem; color: var(--gray); letter-spacing: 2px; display: block; text-transform: uppercase; margin-top: 2px; }
+  .nav-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-tab {
+    padding: 7px 14px; border-radius: 8px;
+    background: transparent; border: 1px solid transparent;
+    color: var(--gray); font-family: 'Syne', sans-serif;
+    font-size: 0.78rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.3px;
+  }
+  .nav-tab:hover { color: var(--white); border-color: var(--border); }
+  .nav-tab.active { background: var(--green-glow); border-color: var(--green); color: var(--green); }
+
+  /* ─── PAGES ─── */
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 86vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; position: relative; padding: 60px 20px; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,230,118,0.09), transparent 70%);
+    pointer-events: none;
+  }
+  /* animated grid bg */
+  .hero-grid {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden; opacity: 0.04;
+    background-image: linear-gradient(var(--green) 1px, transparent 1px), linear-gradient(90deg, var(--green) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green-glow); border: 1px solid var(--green);
+    color: var(--green); border-radius: 100px;
+    padding: 6px 18px; font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 24px;
+  }
+  .hero-badge::before { content: '⚡'; }
+  h1.hero-title {
+    font-size: clamp(2.2rem, 7vw, 5rem);
+    font-weight: 800; line-height: 1.06; max-width: 820px; letter-spacing: -2px;
+  }
+  h1.hero-title .accent { color: var(--green); }
+  .hero-sub { color: var(--gray); font-size: 1.08rem; max-width: 560px; margin: 20px auto 36px; line-height: 1.7; }
+  .cta-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn { padding: 12px 26px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; border: none; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--green); color: var(--navy); }
+  .btn-primary:hover { background: #69f0ae; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,230,118,0.28); }
+  .btn-outline { background: transparent; border: 1.5px solid var(--green); color: var(--green); }
+  .btn-outline:hover { background: var(--green-glow); transform: translateY(-2px); }
+  .btn-ghost { background: var(--navy3); color: var(--white); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--navy4); transform: translateY(-2px); }
+  .btn-danger { background: rgba(244,67,54,0.15); color: #ef5350; border: 1px solid rgba(244,67,54,0.3); }
+  .btn-danger:hover { background: rgba(244,67,54,0.25); }
+
+  .stats-row { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; margin-top: 60px; }
+  .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 26px 34px; min-width: 155px; text-align: center; backdrop-filter: blur(8px); }
+  .stat-num { font-family: 'Space Mono', monospace; font-size: 1.9rem; font-weight: 700; color: var(--green); display: block; }
+  .stat-label { color: var(--gray); font-size: 0.78rem; margin-top: 4px; font-weight: 600; }
+
+  .section { padding: 66px 40px; max-width: 1100px; margin: 0 auto; }
+  .section-title { font-size: 1.9rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
+  .section-sub { color: var(--gray); font-size: 0.96rem; margin-bottom: 38px; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 26px; transition: border-color 0.2s, transform 0.2s; }
+  .card:hover { border-color: var(--green); transform: translateY(-3px); }
+  .card-icon { font-size: 2rem; margin-bottom: 12px; }
+  .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 7px; }
+  .card-desc { color: var(--gray); font-size: 0.85rem; line-height: 1.6; }
+  .tag { display: inline-block; padding: 3px 12px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .tag-green { background: var(--green-glow); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+  .tag-blue { background: rgba(33,150,243,0.1); color: #64b5f6; border: 1px solid rgba(33,150,243,0.2); }
+  .tag-orange { background: rgba(255,152,0,0.1); color: var(--orange); border: 1px solid rgba(255,152,0,0.25); }
+  .tag-purple { background: rgba(206,147,216,0.1); color: var(--purple); border: 1px solid rgba(206,147,216,0.25); }
+
+  /* ─── CAMPUS HERO SECTION ─── */
+  .campus-hero {
+    background: linear-gradient(135deg, rgba(0,230,118,0.06), rgba(100,181,246,0.04));
+    border: 1px solid var(--border); border-radius: 20px; padding: 40px;
+    margin-bottom: 32px; position: relative; overflow: hidden;
+  }
+  .campus-hero::before {
+    content: '🏫'; position: absolute; right: 30px; top: 20px; font-size: 6rem; opacity: 0.06;
+  }
+  .campus-hero h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+  .campus-hero p { color: var(--gray); max-width: 600px; line-height: 1.7; }
+  .campus-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 28px; }
+  .campus-metric { background: rgba(10,15,30,0.5); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+  .campus-metric-val { font-family: 'Space Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--green); }
+  .campus-metric-label { font-size: 0.72rem; color: var(--gray); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ─── ENERGY MAP ─── */
+  .campus-map-wrap { position: relative; background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; overflow: hidden; }
+  .campus-map { position: relative; width: 100%; height: 340px; background: linear-gradient(135deg, #0d1a2e, #0a1520); border-radius: 10px; overflow: hidden; }
+  .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,230,118,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,230,118,0.06) 1px,transparent 1px); background-size: 40px 40px; }
+  .campus-node {
+    position: absolute; width: 54px; height: 54px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+    cursor: pointer; transition: transform 0.2s; z-index: 2;
+    border: 2px solid;
+  }
+  .campus-node:hover { transform: scale(1.15); }
+  .campus-node.solar { background: rgba(255,193,7,0.15); border-color: #ffc107; }
+  .campus-node.storage { background: rgba(0,230,118,0.15); border-color: var(--green); }
+  .campus-node.consumer { background: rgba(100,181,246,0.15); border-color: var(--blue); }
+  .campus-node.ev { background: rgba(206,147,216,0.15); border-color: var(--purple); }
+  .node-label { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); font-size: 0.62rem; font-weight: 700; white-space: nowrap; color: var(--gray); }
+  .energy-flow { position: absolute; pointer-events: none; z-index: 1; }
+  .node-tooltip { position: absolute; background: rgba(10,15,30,0.95); border: 1px solid var(--green); border-radius: 10px; padding: 12px 16px; font-size: 0.78rem; pointer-events: none; z-index: 10; display: none; min-width: 160px; }
+  .map-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.75rem; color: var(--gray); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ─── FORMS ─── */
+  .form-wrap { max-width: 620px; margin: 50px auto; padding: 0 20px; }
+  .form-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 38px; }
+  .form-card h2 { font-size: 1.45rem; font-weight: 800; margin-bottom: 6px; }
+  .form-card p { color: var(--gray); font-size: 0.87rem; margin-bottom: 28px; }
+  .field { margin-bottom: 18px; }
+  label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--gray); margin-bottom: 6px; letter-spacing: 0.3px; }
+  input, select, textarea { width: 100%; padding: 11px 15px; border-radius: 10px; background: var(--navy); border: 1.5px solid var(--border); color: var(--white); font-family: 'Syne', sans-serif; font-size: 0.88rem; outline: none; transition: border-color 0.2s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--green); }
+  select option { background: var(--navy2); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 22px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .upload-area:hover { border-color: var(--green); background: var(--green-glow2); }
+  .upload-area p { color: var(--gray); font-size: 0.82rem; margin-top: 8px; }
+  .success-msg { display: none; background: var(--green-glow); border: 1px solid var(--green); border-radius: 12px; padding: 20px; text-align: center; margin-top: 18px; }
+  .success-msg .check { font-size: 2rem; }
+  .success-msg h3 { color: var(--green); font-size: 1.05rem; margin: 8px 0 4px; }
+  .success-msg p { color: var(--gray); font-size: 0.84rem; }
+
+  /* ─── DIAGNOSTICS ─── */
+  .diag-wrap { max-width: 920px; margin: 0 auto; padding: 40px 20px; }
+  .diag-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 30px; }
+  .battery-selector { display: flex; gap: 8px; flex-wrap: wrap; }
+  .bat-btn { padding: 7px 15px; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; color: var(--gray); font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .bat-btn.active, .bat-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-glow); }
+  .diag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grade-badge { display: inline-flex; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 50%; font-family: 'Space Mono', monospace; font-size: 1.5rem; font-weight: 700; margin: 14px auto; }
+  .grade-A { background: rgba(0,230,118,0.15); color: var(--green); border: 2px solid var(--green); }
+  .grade-B { background: rgba(255,193,7,0.15); color: #ffc107; border: 2px solid #ffc107; }
+  .grade-C { background: rgba(255,87,34,0.15); color: #ff5722; border: 2px solid #ff5722; }
+  .soh-bar { height: 10px; border-radius: 5px; background: var(--navy3); margin: 10px 0 6px; overflow: hidden; }
+  .soh-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--green), #69f0ae); transition: width 0.6s ease; }
+  .metric-row { display: flex; justify-content: space-between; margin: 7px 0; }
+  .metric-key { color: var(--gray); font-size: 0.8rem; }
+  .metric-val { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--white); font-weight: 700; }
+  .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .chart-card h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 14px; color: var(--gray); letter-spacing: 0.5px; }
+  canvas { max-height: 210px; }
+
+  /* ─── TRACKING ─── */
+  .track-wrap { max-width: 820px; margin: 0 auto; padding: 40px 20px; }
+  .timeline { position: relative; }
+  .timeline::before { content: ''; position: absolute; left: 28px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--green), var(--navy3)); }
+  .tl-item { display: flex; gap: 22px; margin-bottom: 30px; position: relative; }
+  .tl-dot { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: 2px solid; position: relative; z-index: 1; background: var(--navy2); }
+  .tl-dot.done { border-color: var(--green); background: var(--green-glow); }
+  .tl-dot.active-step { border-color: #ffc107; background: rgba(255,193,7,0.1); animation: pulse-tl 1.5s ease-in-out infinite; }
+  .tl-dot.pending { border-color: var(--navy4); color: var(--gray); }
+  @keyframes pulse-tl { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,0.3)} 50%{box-shadow:0 0 0 10px rgba(255,193,7,0)} }
+  .tl-content { padding-top: 10px; }
+  .tl-stage { font-weight: 800; font-size: 0.98rem; }
+  .tl-date { font-family: 'Space Mono', monospace; font-size: 0.73rem; color: var(--gray); margin: 4px 0; }
+  .tl-desc { color: var(--gray); font-size: 0.83rem; line-height: 1.6; }
+
+  /* ─── MARKETPLACE ─── */
+  .market-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+  .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .filter-select { padding: 8px 14px; border-radius: 10px; background: var(--card-bg); border: 1.5px solid var(--border); color: var(--white); font-family: 'Syne', sans-serif; font-size: 0.82rem; cursor: pointer; outline: none; }
+  .bat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 22px; transition: all 0.2s; }
+  .bat-card:hover { border-color: var(--green); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,230,118,0.1); }
+  .bat-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .bat-id { font-family: 'Space Mono', monospace; font-size: 0.73rem; color: var(--green); }
+  .bat-cap { font-size: 1.4rem; font-weight: 800; }
+  .bat-soh { font-size: 0.8rem; color: var(--gray); margin: 4px 0 10px; }
+  .bat-price { font-family: 'Space Mono', monospace; font-size: 1.15rem; font-weight: 700; color: var(--green); }
+  .bat-app { font-size: 0.76rem; color: var(--gray); margin: 8px 0; }
+  .bat-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .btn-sm { padding: 7px 14px; font-size: 0.78rem; border-radius: 8px; }
+
+  /* ─── PLANS ─── */
+  .plans-wrap { max-width: 980px; margin: 0 auto; padding: 40px 20px; }
+  .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; }
+  .plan-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 30px; transition: all 0.25s; position: relative; }
+  .plan-card.featured { border-color: var(--green); background: linear-gradient(145deg, rgba(0,230,118,0.06), var(--card-bg)); }
+  .plan-card.featured::before { content: 'POPULAR'; position: absolute; top: -1px; left: 50%; transform: translateX(-50%); background: var(--green); color: var(--navy); font-size: 0.62rem; font-weight: 700; padding: 4px 16px; border-radius: 0 0 10px 10px; letter-spacing: 1px; }
+  .plan-icon { font-size: 2.4rem; margin-bottom: 12px; }
+  .plan-name { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+  .plan-desc { color: var(--gray); font-size: 0.81rem; margin-bottom: 18px; line-height: 1.5; }
+  .plan-price { font-family: 'Space Mono', monospace; font-size: 1.9rem; font-weight: 700; color: var(--green); }
+  .plan-price span { font-size: 0.82rem; color: var(--gray); }
+  .plan-features { margin: 18px 0; }
+  .plan-feat { display: flex; align-items: center; gap: 10px; font-size: 0.83rem; color: var(--gray); padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .plan-feat:last-child { border: none; }
+  .plan-feat::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+  /* ─── ANALYTICS ─── */
+  .analytics-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .kpi-val { font-family: 'Space Mono', monospace; font-size: 1.8rem; font-weight: 700; color: var(--green); }
+  .kpi-label { color: var(--gray); font-size: 0.78rem; margin-top: 4px; font-weight: 600; }
+  .kpi-delta { font-size: 0.73rem; color: var(--green); margin-top: 5px; }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+  /* ─── CARBON LIVE TICKER ─── */
+  .carbon-bar {
+    background: linear-gradient(90deg, rgba(0,230,118,0.05), rgba(0,230,118,0.12));
+    border-top: 1px solid var(--border);
+    padding: 16px 40px;
+    display: flex; align-items: center; justify-content: center; gap: 36px; flex-wrap: wrap;
+    font-size: 0.83rem; position: sticky; bottom: 0; z-index: 50; backdrop-filter: blur(8px);
+  }
+  .carbon-item { display: flex; align-items: center; gap: 9px; }
+  .carbon-val { font-family: 'Space Mono', monospace; color: var(--green); font-weight: 700; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; animation: blink 1.2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* ─── CAMPUS ENERGY PAGE ─── */
+  .campus-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+  /* ─── AI RECOMMENDER ─── */
+  .ai-panel { background: linear-gradient(135deg, rgba(0,230,118,0.04), rgba(100,181,246,0.04)); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  .ai-panel h3 { font-size: 1rem; font-weight: 800; margin-bottom: 6px; }
+  .ai-panel p { color: var(--gray); font-size: 0.84rem; margin-bottom: 18px; }
+  .ai-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .ai-controls select { flex: 1; min-width: 140px; }
+  .ai-output { margin-top: 18px; padding: 18px; background: var(--navy); border-radius: 12px; border: 1px solid var(--border); display: none; }
+  .ai-output.show { display: block; }
+  .ai-rec { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .ai-rec:last-child { border: none; margin-bottom: 0; padding-bottom: 0; }
+  .ai-rec-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .ai-rec-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 3px; }
+  .ai-rec-desc { color: var(--gray); font-size: 0.8rem; line-height: 1.5; }
+  .ai-badge { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--green); background: var(--green-glow); border-radius: 6px; padding: 2px 8px; margin-left: 8px; }
+
+  /* ─── CARBON CALCULATOR ─── */
+  .calc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+  .calc-result { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 20px; }
+  .calc-item { background: var(--navy); border-radius: 12px; padding: 14px; text-align: center; border: 1px solid var(--border); }
+  .calc-val { font-family: 'Space Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--green); }
+  .calc-unit { font-size: 0.72rem; color: var(--gray); margin-top: 4px; }
+  .range-wrap { margin: 8px 0; }
+  input[type=range] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--navy3); border: none; padding: 0; outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--green); cursor: pointer; border: 2px solid var(--navy); }
+  .range-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--gray); margin-top: 4px; }
+
+  /* ─── GAMIFICATION / LEADERBOARD ─── */
+  .leaderboard { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .lb-header { display: grid; grid-template-columns: 40px 1fr 100px 100px; gap: 12px; padding: 12px 20px; background: rgba(0,230,118,0.06); border-bottom: 1px solid var(--border); font-size: 0.72rem; font-weight: 700; color: var(--gray); letter-spacing: 0.5px; text-transform: uppercase; }
+  .lb-row { display: grid; grid-template-columns: 40px 1fr 100px 100px; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); align-items: center; transition: background 0.2s; }
+  .lb-row:last-child { border: none; }
+  .lb-row:hover { background: rgba(0,230,118,0.03); }
+  .lb-rank { font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; }
+  .lb-rank.gold { color: #ffd700; }
+  .lb-rank.silver { color: #c0c0c0; }
+  .lb-rank.bronze { color: #cd7f32; }
+  .lb-name { font-weight: 700; font-size: 0.88rem; }
+  .lb-dept { font-size: 0.73rem; color: var(--gray); margin-top: 2px; }
+  .lb-pts { font-family: 'Space Mono', monospace; font-size: 0.9rem; font-weight: 700; color: var(--green); text-align: right; }
+  .lb-co2 { font-family: 'Space Mono', monospace; font-size: 0.82rem; color: var(--blue); text-align: right; }
+
+  /* ─── ALERT PANEL ─── */
+  .alert { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 12px; margin-bottom: 12px; font-size: 0.85rem; }
+  .alert-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .alert-title { font-weight: 700; margin-bottom: 3px; }
+  .alert-desc { color: var(--gray); font-size: 0.8rem; line-height: 1.5; }
+  .alert-green { background: rgba(0,230,118,0.07); border: 1px solid rgba(0,230,118,0.25); }
+  .alert-orange { background: rgba(255,152,0,0.07); border: 1px solid rgba(255,152,0,0.25); }
+  .alert-red { background: rgba(244,67,54,0.07); border: 1px solid rgba(244,67,54,0.25); }
+  .alert-blue { background: rgba(100,181,246,0.07); border: 1px solid rgba(100,181,246,0.25); }
+
+  /* ─── PROGRESS BARS ─── */
+  .progress-wrap { margin-bottom: 14px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 6px; }
+  .progress-label span:first-child { color: var(--gray); }
+  .progress-label span:last-child { font-family: 'Space Mono', monospace; color: var(--green); font-weight: 700; font-size: 0.75rem; }
+  .progress-bar { height: 8px; border-radius: 4px; background: var(--navy3); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 1.2s ease; }
+
+  /* ─── TABS WITHIN PAGE ─── */
+  .inner-tabs { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
+  .inner-tab { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); color: var(--gray); background: transparent; font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .inner-tab.active { background: var(--green-glow); border-color: var(--green); color: var(--green); }
+  .inner-panel { display: none; }
+  .inner-panel.active { display: block; }
+
+  /* ─── SIMULATION ─── */
+  .sim-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .sim-output { background: var(--navy); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .sim-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+  .sim-row:last-child { border: none; }
+  .sim-key { color: var(--gray); }
+  .sim-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+
+  /* ─── CHATBOT ─── */
+  .chat-fab {
+    position: fixed; bottom: 72px; right: 24px; z-index: 200;
+    width: 54px; height: 54px; border-radius: 50%; border: none;
+    background: var(--green); color: var(--navy); font-size: 1.4rem;
+    cursor: pointer; box-shadow: 0 4px 20px rgba(0,230,118,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .chat-fab:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(0,230,118,0.5); }
+  .chat-widget {
+    position: fixed; bottom: 134px; right: 24px; z-index: 199;
+    width: 360px; max-height: 520px; display: none; flex-direction: column;
+    background: var(--navy2); border: 1px solid var(--green);
+    border-radius: 18px; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  }
+  .chat-widget.open { display: flex; }
+  .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; background: rgba(0,230,118,0.07); border-bottom: 1px solid var(--border); }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .chat-msg { display: flex; }
+  .chat-msg.bot { justify-content: flex-start; }
+  .chat-msg.user { justify-content: flex-end; }
+  .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 0.83rem; line-height: 1.55; }
+  .chat-msg.bot .chat-bubble { background: var(--navy3); border: 1px solid var(--border); color: var(--white); border-bottom-left-radius: 4px; }
+  .chat-msg.user .chat-bubble { background: var(--green); color: var(--navy); font-weight: 600; border-bottom-right-radius: 4px; }
+  .chat-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .chat-chip { padding: 5px 11px; border-radius: 100px; border: 1px solid var(--border); background: transparent; color: var(--green); font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: 'Syne', sans-serif; }
+  .chat-chip:hover { background: var(--green-glow); border-color: var(--green); }
+  .chat-input-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .chat-input { flex: 1; background: var(--navy); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--white); font-family: 'Syne', sans-serif; font-size: 0.82rem; outline: none; }
+  .chat-input:focus { border-color: var(--green); }
+  .chat-typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
+  .chat-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gray); animation: typingDot 1.2s infinite; }
+  .chat-dot:nth-child(2) { animation-delay: 0.2s; }
+  .chat-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingDot { 0%,80%,100%{opacity:0.3;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+
+  /* ─── BATTERY PASSPORT ─── */
+  .passport-wrap { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+  .passport-card { background: linear-gradient(135deg, var(--card-bg), rgba(0,230,118,0.03)); border: 1px solid var(--green); border-radius: 20px; padding: 32px; position: relative; overflow: hidden; }
+  .passport-card::before { content: '🔗'; position: absolute; right: 24px; top: 18px; font-size: 4rem; opacity: 0.06; }
+  .passport-id { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--green); letter-spacing: 2px; text-transform: uppercase; }
+  .passport-title { font-size: 1.6rem; font-weight: 800; margin: 8px 0 4px; }
+  .passport-hash { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--gray); word-break: break-all; }
+  .chain-timeline { margin: 24px 0; }
+  .chain-event { display: flex; gap: 14px; margin-bottom: 0; }
+  .chain-connector { display: flex; flex-direction: column; align-items: center; }
+  .chain-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--green); border: 2px solid var(--navy); flex-shrink: 0; margin-top: 3px; }
+  .chain-line { width: 2px; flex: 1; background: linear-gradient(to bottom, var(--green), rgba(0,230,118,0.1)); min-height: 30px; }
+  .chain-event:last-child .chain-line { display: none; }
+  .chain-content { padding-bottom: 20px; }
+  .chain-event-title { font-weight: 700; font-size: 0.88rem; }
+  .chain-event-date { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--green); margin: 2px 0; }
+  .chain-event-hash { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--gray); }
+  .chain-event-desc { color: var(--gray); font-size: 0.8rem; margin-top: 3px; }
+  .passport-qr { width: 80px; height: 80px; background: var(--white); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: var(--navy); font-weight: 700; text-align: center; flex-shrink: 0; }
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; margin-top: 20px; }
+  .cert-item { background: var(--navy); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+  .cert-icon { font-size: 1.6rem; }
+  .cert-label { font-size: 0.68rem; color: var(--gray); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cert-val { font-family: 'Space Mono', monospace; font-size: 0.82rem; color: var(--white); font-weight: 700; margin-top: 2px; }
+
+  /* ─── CAMPUS COMPARE ─── */
+  .compare-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+  .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 16px; margin-bottom: 24px; }
+  .compare-col { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .compare-col.highlight { border-color: var(--green); }
+  .compare-col-header { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); }
+  .compare-col-header.best { background: rgba(0,230,118,0.06); }
+  .compare-uni { font-weight: 800; font-size: 1.05rem; }
+  .compare-badge { font-size: 0.7rem; color: var(--green); margin-top: 4px; }
+  .compare-row { display: flex; justify-content: space-between; padding: 11px 18px; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .compare-row:last-child { border: none; }
+  .compare-key { color: var(--gray); }
+  .compare-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .compare-val.best { color: var(--green); }
+
+  /* ─── SUSTAINABILITY REPORT ─── */
+  .report-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px; }
+  .report-preview { background: var(--white); color: #111; border-radius: 16px; padding: 40px; margin-top: 20px; }
+  .report-preview h1 { font-size: 1.6rem; font-weight: 800; color: #0a3d1e; margin-bottom: 4px; }
+  .report-preview h2 { font-size: 1rem; font-weight: 800; color: #0a3d1e; margin: 20px 0 8px; border-bottom: 2px solid #00c853; padding-bottom: 4px; }
+  .report-preview p { font-size: 0.85rem; line-height: 1.65; color: #333; }
+  .report-preview .report-kpi-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 14px 0; }
+  .report-preview .report-kpi { background: #f0faf4; border: 1px solid #b2dfdb; border-radius: 8px; padding: 12px; text-align: center; }
+  .report-preview .report-kpi-val { font-family: 'Space Mono', monospace; font-size: 1.3rem; font-weight: 700; color: #0a7c3e; }
+  .report-preview .report-kpi-label { font-size: 0.7rem; color: #555; margin-top: 3px; }
+  .report-preview .report-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
+  .report-preview .report-table th { background: #e8f5e9; color: #0a3d1e; padding: 8px 12px; text-align: left; font-weight: 700; }
+  .report-preview .report-table td { padding: 8px 12px; border-bottom: 1px solid #e0e0e0; color: #333; }
+
+  /* ─── ROI CONFIGURATOR ─── */
+  .roi-wrap { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+  .roi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .roi-meter { position: relative; text-align: center; padding: 20px; }
+  .roi-big { font-family: 'Space Mono', monospace; font-size: 3.5rem; font-weight: 700; color: var(--green); line-height: 1; }
+  .roi-label { color: var(--gray); font-size: 0.82rem; margin-top: 6px; }
+  .roi-table { width: 100%; }
+  .roi-tr { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+  .roi-tr:last-child { border: none; }
+  .roi-key { color: var(--gray); }
+  .roi-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .roi-val.pos { color: var(--green); }
+  .roi-val.neg { color: #ef5350; }
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width: 640px) {
+    nav { padding: 12px 14px; }
+    .nav-tabs { gap: 2px; }
+    .nav-tab { padding: 5px 9px; font-size: 0.68rem; }
+    .section { padding: 36px 14px; }
+    .diag-grid, .charts-grid, .form-row, .sim-controls { grid-template-columns: 1fr; }
+    .carbon-bar { padding: 12px 14px; gap: 16px; }
+    .campus-map { height: 240px; }
+    .lb-header, .lb-row { grid-template-columns: 36px 1fr 80px; }
+    .lb-co2 { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Re<span>Volt</span> ⚡<span class="logo-sub">Carbon-Neutral Campus</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('landing')">Home</button>
+    <button class="nav-tab" onclick="showPage('campus')">Campus</button>
+    <button class="nav-tab" onclick="showPage('collection')">Collect</button>
+    <button class="nav-tab" onclick="showPage('diagnostics')">Diagnose</button>
+    <button class="nav-tab" onclick="showPage('tracking')">Track</button>
+    <button class="nav-tab" onclick="showPage('marketplace')">Market</button>
+    <button class="nav-tab" onclick="showPage('plans')">Plans</button>
+    <button class="nav-tab" onclick="showPage('analytics')">Analytics</button>
+    <button class="nav-tab" onclick="showPage('passport')">🔗 Passport</button>
+    <button class="nav-tab" onclick="showPage('compare')">⚖️ Compare</button>
+    <button class="nav-tab" onclick="showPage('report')">📄 Report</button>
+    <button class="nav-tab" onclick="showPage('roi')">💰 ROI</button>
+  </div>
+  <!-- AI Chat Button -->
+  <button class="chat-fab" onclick="toggleChat()" title="Ask ReVolt AI">🤖</button>
+</nav>
+
+<!-- AI CHATBOT WIDGET -->
+<div class="chat-widget" id="chatWidget">
+  <div class="chat-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:1.4rem">🤖</span>
+      <div><div style="font-weight:800;font-size:0.9rem">ReVolt AI Assistant</div><div style="font-size:0.72rem;color:var(--green)">● Online — Campus Energy Expert</div></div>
+    </div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:var(--gray);font-size:1.2rem;cursor:pointer">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg bot"><div class="chat-bubble">👋 Hi! I'm the ReVolt AI. Ask me anything about campus battery deployment, carbon savings, battery health, pricing, or EPR compliance!</div></div>
+    <div class="chat-suggestions">
+      <button class="chat-chip" onclick="askBot('What is the ROI of deploying second-life batteries on campus?')">ROI of campus batteries?</button>
+      <button class="chat-chip" onclick="askBot('How does V2G work on a campus?')">How does V2G work?</button>
+      <button class="chat-chip" onclick="askBot('What is EPR compliance for EV batteries in India?')">EPR compliance?</button>
+      <button class="chat-chip" onclick="askBot('Which battery chemistry is best for solar storage?')">Best battery for solar?</button>
+    </div>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" class="chat-input" placeholder="Ask about batteries, carbon, ROI…" onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="btn btn-primary btn-sm" onclick="sendChat()" style="flex-shrink:0">Send</button>
+  </div>
+</div>
+
+<!-- ═══════════ LANDING ═══════════ -->
+<div id="landing" class="page active">
+  <div class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-badge">India's First Second-Life Battery Platform</div>
+    <h1 class="hero-title">
+      Building a Truly<br><span class="accent">Carbon-Neutral Campus</span>
+    </h1>
+    <p class="hero-sub">
+      ReVolt India gives retired EV batteries a second life as campus energy storage — cutting fossil fuel use, slashing costs, and turning every university into a clean-energy hub.
+    </p>
+    <div class="cta-group">
+      <button class="btn btn-primary" onclick="showPage('campus')">Explore Campus Hub</button>
+      <button class="btn btn-outline" onclick="showPage('analytics')">Live Analytics</button>
+      <button class="btn btn-ghost" onclick="showPage('collection')">Register OEM</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><span class="stat-num" id="s1">0</span><span class="stat-label">Batteries Collected</span></div>
+      <div class="stat-card"><span class="stat-num" id="s2">0</span><span class="stat-label">MWh Redeployed</span></div>
+      <div class="stat-card"><span class="stat-num" id="s3">0</span><span class="stat-label">Tonnes CO₂ Saved</span></div>
+      <div class="stat-card"><span class="stat-num" id="s4">0</span><span class="stat-label">Campus Partners</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="tag tag-blue">THE PROBLEM</div>
+    <h2 class="section-title">India's EV Battery Crisis</h2>
+    <p class="section-sub">Millions of EV batteries will retire by 2030 — still holding 70–80% capacity with nowhere to go.</p>
+    <div class="card-grid">
+      <div class="card"><div class="card-icon">🔋</div><div class="card-title">Premature Retirement</div><div class="card-desc">EV batteries are considered "end-of-life" at 80% SOH, yet hold years of usable storage potential for stationary applications.</div></div>
+      <div class="card"><div class="card-icon">☠️</div><div class="card-title">Toxic Waste Risk</div><div class="card-desc">Improper disposal of lithium-ion batteries leaches heavy metals into soil and groundwater across India.</div></div>
+      <div class="card"><div class="card-icon">💰</div><div class="card-title">Missed Value</div><div class="card-desc">₹2,000+ crore worth of usable battery capacity is lost annually to poor end-of-life management practices.</div></div>
+      <div class="card"><div class="card-icon">🏫</div><div class="card-title">Campus Energy Gap</div><div class="card-desc">India's 50,000+ campuses rely on diesel generators for backup. Second-life batteries can eliminate this at 40% lower cost.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="tag tag-green">THE SOLUTION</div>
+    <h2 class="section-title">The ReVolt Campus Lifecycle</h2>
+    <p class="section-sub">A full-stack platform turning campuses into self-powered, carbon-neutral energy communities.</p>
+    <div class="card-grid">
+      <div class="card"><div class="card-icon">📥</div><div class="card-title">1. Collect</div><div class="card-desc">OEMs submit retired batteries via our portal. We handle logistics, compliance, and EPR reporting.</div></div>
+      <div class="card"><div class="card-icon">🔬</div><div class="card-title">2. AI Diagnose</div><div class="card-desc">Our ML model grades each battery's SOH, chemistry, and optimal second-use application automatically.</div></div>
+      <div class="card"><div class="card-icon">🔧</div><div class="card-title">3. Refurbish</div><div class="card-desc">Certified partners repack, rebalance, and certify batteries to BIS standards for campus deployment.</div></div>
+      <div class="card"><div class="card-icon">🏫</div><div class="card-title">4. Campus Deploy</div><div class="card-desc">Universities subscribe to storage-as-a-service plans with real-time monitoring, EV charging, and carbon dashboards.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="tag tag-orange">INNOVATION</div>
+    <h2 class="section-title">Why This Wins</h2>
+    <p class="section-sub">Five pillars of engineering innovation for a sustainable campus future.</p>
+    <div class="card-grid">
+      <div class="card"><div class="card-icon">🤖</div><div class="card-title">AI-Powered SOH Grading</div><div class="card-desc">ML model trained on 10,000+ battery cycles predicts remaining life with 94% accuracy using BMS telemetry.</div></div>
+      <div class="card"><div class="card-icon">🗺️</div><div class="card-title">Campus Energy Map</div><div class="card-desc">Live digital twin shows real-time power flow between solar, storage, EV charging, labs, and hostels.</div></div>
+      <div class="card"><div class="card-icon">🎮</div><div class="card-title">Green Gamification</div><div class="card-desc">Students earn Carbon Credits for sustainable behaviour — redeemable for canteen discounts and priority lab booking.</div></div>
+      <div class="card"><div class="card-icon">🔄</div><div class="card-title">V2G Microgrid</div><div class="card-desc">Campus EV fleet plugs back into the microgrid during peak demand — turning parked vehicles into live storage.</div></div>
+      <div class="card"><div class="card-icon">📊</div><div class="card-title">Carbon Neutral Tracker</div><div class="card-desc">Per-building CO₂ dashboards with automated reports for NAAC/NBA accreditation and sustainability rankings.</div></div>
+      <div class="card"><div class="card-icon">🔗</div><div class="card-title">EPR Blockchain Ledger</div><div class="card-desc">Immutable battery passport records the entire chain of custody for regulatory compliance and OEM credits.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CAMPUS HUB ═══════════ -->
+<div id="campus" class="page">
+  <div class="campus-wrap">
+    <div class="campus-hero">
+      <div class="tag tag-green">CAMPUS ENERGY HUB</div>
+      <h2>IIT Delhi — Carbon Neutral by 2027</h2>
+      <p>Live campus energy dashboard powered by 24 refurbished EV battery packs (total: 840 kWh). Solar + storage + V2G eliminating diesel dependency across all 14 buildings.</p>
+      <div class="campus-metrics">
+        <div class="campus-metric"><div class="campus-metric-val">840</div><div class="campus-metric-label">kWh Storage</div></div>
+        <div class="campus-metric"><div class="campus-metric-val">1.2 MW</div><div class="campus-metric-label">Solar Capacity</div></div>
+        <div class="campus-metric"><div class="campus-metric-val">78%</div><div class="campus-metric-label">Renewable Mix</div></div>
+        <div class="campus-metric"><div class="campus-metric-val">0 kg</div><div class="campus-metric-label">Diesel Today</div></div>
+        <div class="campus-metric"><div class="campus-metric-val">₹4.2L</div><div class="campus-metric-label">Saved/Month</div></div>
+        <div class="campus-metric"><div class="campus-metric-val">24</div><div class="campus-metric-label">EV Chargers</div></div>
+      </div>
+    </div>
+
+    <div class="inner-tabs">
+      <button class="inner-tab active" onclick="showInner('campus','energy-map')">🗺 Energy Map</button>
+      <button class="inner-tab" onclick="showInner('campus','carbon-calc')">🌿 Carbon Calculator</button>
+      <button class="inner-tab" onclick="showInner('campus','simulation')">⚙️ Microgrid Sim</button>
+      <button class="inner-tab" onclick="showInner('campus','leaderboard')">🏆 Green Leaderboard</button>
+      <button class="inner-tab" onclick="showInner('campus','alerts')">🔔 Smart Alerts</button>
+    </div>
+
+    <!-- ENERGY MAP -->
+    <div id="energy-map" class="inner-panel active">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+        <div class="campus-map-wrap">
+          <h3 style="font-size:0.88rem;font-weight:700;margin-bottom:14px;color:var(--gray)">LIVE CAMPUS ENERGY FLOW</h3>
+          <div class="campus-map" id="campusMap">
+            <div class="map-grid"></div>
+            <!-- Solar Panels -->
+            <div class="campus-node solar" style="top:12%;left:40%" title="Solar Array" onmouseenter="showTip(event,'☀️ Solar Array<br>Output: 86 kW<br>Irradiance: 820 W/m²<br>Efficiency: 21.4%')" onmouseleave="hideTip()">☀️<span class="node-label">Solar Array</span></div>
+            <!-- Battery Storage -->
+            <div class="campus-node storage" style="top:42%;left:45%" title="Battery Bank" onmouseenter="showTip(event,'🔋 Battery Bank<br>SOC: 74%<br>Capacity: 840 kWh<br>24 packs active')" onmouseleave="hideTip()">🔋<span class="node-label">Battery Bank</span></div>
+            <!-- Academic Block -->
+            <div class="campus-node consumer" style="top:20%;left:15%" onmouseenter="showTip(event,'🏛 Academic Block<br>Load: 42 kW<br>100% renewable<br>Carbon: 0 kg/h')" onmouseleave="hideTip()">🏛<span class="node-label">Academic</span></div>
+            <!-- Hostel -->
+            <div class="campus-node consumer" style="top:65%;left:14%" onmouseenter="showTip(event,'🏠 Hostel Block<br>Load: 28 kW<br>From: Storage<br>Carbon: 0 kg/h')" onmouseleave="hideTip()">🏠<span class="node-label">Hostel</span></div>
+            <!-- Labs -->
+            <div class="campus-node consumer" style="top:20%;left:72%" onmouseenter="showTip(event,'🔬 Research Labs<br>Load: 61 kW<br>Solar direct<br>Carbon: 0 kg/h')" onmouseleave="hideTip()">🔬<span class="node-label">R&D Labs</span></div>
+            <!-- EV Charging -->
+            <div class="campus-node ev" style="top:65%;left:72%" onmouseenter="showTip(event,'🔌 EV Charging Hub<br>24 chargers active<br>V2G: 18 kW export<br>8 vehicles charging')" onmouseleave="hideTip()">🔌<span class="node-label">EV Hub</span></div>
+            <!-- Grid connection -->
+            <div class="campus-node consumer" style="top:42%;left:12%;width:46px;height:46px;font-size:1.1rem" onmouseenter="showTip(event,'⚡ Grid Connection<br>Status: EXPORT mode<br>Selling: 12 kW<br>Net metering active')" onmouseleave="hideTip()">⚡<span class="node-label">Grid</span></div>
+
+            <!-- SVG flow lines -->
+            <svg class="energy-flow" width="100%" height="100%" viewBox="0 0 500 340" preserveAspectRatio="none">
+              <defs>
+                <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><circle cx="3" cy="3" r="2" fill="rgba(0,230,118,0.7)"/></marker>
+              </defs>
+              <!-- Solar → Battery -->
+              <line x1="215" y1="65" x2="230" y2="152" stroke="rgba(255,193,7,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+              <!-- Battery → Academic -->
+              <line x1="220" y1="155" x2="85" y2="80" stroke="rgba(0,230,118,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+              <!-- Battery → Hostel -->
+              <line x1="215" y1="168" x2="80" y2="228" stroke="rgba(0,230,118,0.35)" stroke-width="2" stroke-dasharray="6,4"/>
+              <!-- Solar → Labs -->
+              <line x1="230" y1="58" x2="370" y2="78" stroke="rgba(255,193,7,0.35)" stroke-width="2" stroke-dasharray="6,4"/>
+              <!-- Battery → EV -->
+              <line x1="240" y1="168" x2="365" y2="230" stroke="rgba(206,147,216,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+              <!-- Battery → Grid (export) -->
+              <line x1="215" y1="158" x2="75" y2="155" stroke="rgba(100,181,246,0.3)" stroke-width="1.5" stroke-dasharray="4,4"/>
+            </svg>
+            <div class="node-tooltip" id="nodeTip"></div>
+          </div>
+          <div class="map-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#ffc107"></div>Solar flow</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Battery dispatch</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Grid export</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>EV / V2G</div>
+          </div>
+        </div>
+        <div>
+          <div class="chart-card" style="margin-bottom:18px">
+            <h3>TODAY'S ENERGY MIX</h3>
+            <canvas id="energyMixChart" style="max-height:160px"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>BUILDING LOADS (kW)</h3>
+            <div class="progress-wrap"><div class="progress-label"><span>Academic Block</span><span>42 kW</span></div><div class="progress-bar"><div class="progress-fill" style="width:70%;background:var(--green)"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>Research Labs</span><span>61 kW</span></div><div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--blue)"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>Hostel Block</span><span>28 kW</span></div><div class="progress-bar"><div class="progress-fill" style="width:46%;background:var(--green)"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>EV Charging Hub</span><span>38 kW</span></div><div class="progress-bar"><div class="progress-fill" style="width:62%;background:var(--purple)"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>Admin & Canteen</span><span>18 kW</span></div><div class="progress-bar"><div class="progress-fill" style="width:30%;background:var(--orange)"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARBON CALCULATOR -->
+    <div id="carbon-calc" class="inner-panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="calc-card">
+          <h3 style="font-weight:800;font-size:1rem;margin-bottom:6px">Campus Carbon Calculator</h3>
+          <p style="color:var(--gray);font-size:0.84rem;margin-bottom:20px">Estimate your campus's carbon savings from deploying second-life battery storage.</p>
+          <div class="field">
+            <label>Campus Area (acres)</label>
+            <div class="range-wrap">
+              <input type="range" id="campusSize" min="10" max="500" value="80" oninput="calcCarbon()">
+              <div class="range-labels"><span>10</span><span id="sizeVal">80 acres</span><span>500</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Diesel Generator Capacity (kVA)</label>
+            <div class="range-wrap">
+              <input type="range" id="dieselKva" min="50" max="2000" value="400" step="50" oninput="calcCarbon()">
+              <div class="range-labels"><span>50</span><span id="dieselVal">400 kVA</span><span>2000</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Solar Rooftop Potential (kWp)</label>
+            <div class="range-wrap">
+              <input type="range" id="solarKwp" min="50" max="5000" value="600" step="50" oninput="calcCarbon()">
+              <div class="range-labels"><span>50</span><span id="solarVal">600 kWp</span><span>5000</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Daily Load Hours (hrs)</label>
+            <div class="range-wrap">
+              <input type="range" id="loadHrs" min="4" max="24" value="14" oninput="calcCarbon()">
+              <div class="range-labels"><span>4h</span><span id="hrsVal">14 hrs</span><span>24h</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Student Population</label>
+            <div class="range-wrap">
+              <input type="range" id="students" min="500" max="30000" value="6000" step="500" oninput="calcCarbon()">
+              <div class="range-labels"><span>500</span><span id="studVal">6,000</span><span>30k</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="calc-card">
+          <h3 style="font-weight:800;font-size:1rem;margin-bottom:18px">Projected Annual Impact</h3>
+          <div class="calc-result" id="calcResult">
+            <div class="calc-item"><div class="calc-val" id="co2Saved">0</div><div class="calc-unit">Tonnes CO₂ / yr</div></div>
+            <div class="calc-item"><div class="calc-val" id="dieselSaved">0</div><div class="calc-unit">Litres Diesel Saved</div></div>
+            <div class="calc-item"><div class="calc-val" id="costSaved">0</div><div class="calc-unit">₹ Lakhs Saved / yr</div></div>
+            <div class="calc-item"><div class="calc-val" id="batteryCount">0</div><div class="calc-unit">Battery Packs Needed</div></div>
+            <div class="calc-item"><div class="calc-val" id="treesEq">0</div><div class="calc-unit">Trees Equivalent</div></div>
+            <div class="calc-item"><div class="calc-val" id="payback">0</div><div class="calc-unit">Year Payback</div></div>
+          </div>
+          <div style="margin-top:20px">
+            <div class="chart-card" style="background:var(--navy)">
+              <h3>CO₂ SAVINGS OVER 10 YEARS</h3>
+              <canvas id="co2Chart" style="max-height:160px"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MICROGRID SIMULATION -->
+    <div id="simulation" class="inner-panel">
+      <div class="chart-card" style="margin-bottom:18px">
+        <h3>MICROGRID PERFORMANCE SIMULATION</h3>
+        <p style="color:var(--gray);font-size:0.82rem;margin-bottom:18px">Configure your campus microgrid and see projected performance over 24 hours.</p>
+        <div class="sim-controls">
+          <div class="field" style="margin:0">
+            <label>Solar Capacity (kWp)</label>
+            <select id="simSolar" onchange="runSimulation()">
+              <option value="200">200 kWp</option>
+              <option value="500" selected>500 kWp</option>
+              <option value="1000">1000 kWp</option>
+              <option value="2000">2000 kWp</option>
+            </select>
+          </div>
+          <div class="field" style="margin:0">
+            <label>Battery Storage (kWh)</label>
+            <select id="simStorage" onchange="runSimulation()">
+              <option value="200">200 kWh (5 packs)</option>
+              <option value="400">400 kWh (10 packs)</option>
+              <option value="840" selected>840 kWh (21 packs)</option>
+              <option value="1600">1600 kWh (40 packs)</option>
+            </select>
+          </div>
+          <div class="field" style="margin:0">
+            <label>Season / Weather</label>
+            <select id="simSeason" onchange="runSimulation()">
+              <option value="summer">Summer (Peak Solar)</option>
+              <option value="monsoon" selected>Monsoon (Cloudy)</option>
+              <option value="winter">Winter (Mild)</option>
+            </select>
+          </div>
+          <div class="field" style="margin:0">
+            <label>V2G Fleet (EVs)</label>
+            <select id="simV2g" onchange="runSimulation()">
+              <option value="0">No V2G</option>
+              <option value="10" selected>10 EVs</option>
+              <option value="25">25 EVs</option>
+              <option value="50">50 EVs</option>
+            </select>
+          </div>
+        </div>
+        <canvas id="simChart" style="max-height:240px;margin-top:10px"></canvas>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="chart-card">
+          <h3>SIMULATION SUMMARY</h3>
+          <div class="sim-output" id="simOutput">
+            <div class="sim-row"><span class="sim-key">Renewable Self-Sufficiency</span><span class="sim-val" style="color:var(--green)">82%</span></div>
+            <div class="sim-row"><span class="sim-key">Peak Grid Import (kW)</span><span class="sim-val">34</span></div>
+            <div class="sim-row"><span class="sim-key">Battery Cycles Today</span><span class="sim-val">0.94</span></div>
+            <div class="sim-row"><span class="sim-key">V2G Export (kWh)</span><span class="sim-val" style="color:var(--purple)">48</span></div>
+            <div class="sim-row"><span class="sim-key">CO₂ Avoided Today (kg)</span><span class="sim-val" style="color:var(--green)">286</span></div>
+            <div class="sim-row"><span class="sim-key">Diesel Generator Used</span><span class="sim-val" style="color:#ef5350">0 hours</span></div>
+            <div class="sim-row"><span class="sim-key">Net Revenue (₹)</span><span class="sim-val" style="color:var(--green)">+4,120</span></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>BATTERY STATE OF CHARGE (%)</h3>
+          <canvas id="socChart" style="max-height:180px"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- GREEN LEADERBOARD -->
+    <div id="leaderboard" class="inner-panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+        <div>
+          <div style="margin-bottom:16px">
+            <h3 style="font-weight:800;font-size:1rem;margin-bottom:4px">🏆 Green Campus Leaderboard</h3>
+            <p style="color:var(--gray);font-size:0.82rem">Students earn Carbon Credits for sustainable actions — redeemable for real rewards.</p>
+          </div>
+          <div class="leaderboard">
+            <div class="lb-header"><span>Rank</span><span>Student / Dept</span><span style="text-align:right">Credits</span><span style="text-align:right">CO₂ kg</span></div>
+            <div class="lb-row"><span class="lb-rank gold">🥇</span><div><div class="lb-name">Priya Sharma</div><div class="lb-dept">Electrical Engg</div></div><span class="lb-pts">2,840</span><span class="lb-co2">142</span></div>
+            <div class="lb-row"><span class="lb-rank silver">🥈</span><div><div class="lb-name">Arjun Mehta</div><div class="lb-dept">Mech Engg</div></div><span class="lb-pts">2,615</span><span class="lb-co2">131</span></div>
+            <div class="lb-row"><span class="lb-rank bronze">🥉</span><div><div class="lb-name">Neha Rajan</div><div class="lb-dept">Civil Engg</div></div><span class="lb-pts">2,480</span><span class="lb-co2">124</span></div>
+            <div class="lb-row"><span class="lb-rank">4</span><div><div class="lb-name">Rohan Kapoor</div><div class="lb-dept">CS & AI</div></div><span class="lb-pts">2,210</span><span class="lb-co2">110</span></div>
+            <div class="lb-row"><span class="lb-rank">5</span><div><div class="lb-name">Anika Desai</div><div class="lb-dept">Energy Studies</div></div><span class="lb-pts">1,980</span><span class="lb-co2">99</span></div>
+            <div class="lb-row"><span class="lb-rank">6</span><div><div class="lb-name">Kiran Pillai</div><div class="lb-dept">Materials Sci</div></div><span class="lb-pts">1,744</span><span class="lb-co2">87</span></div>
+            <div class="lb-row"><span class="lb-rank">7</span><div><div class="lb-name">Dev Anand</div><div class="lb-dept">Architecture</div></div><span class="lb-pts">1,690</span><span class="lb-co2">84</span></div>
+            <div class="lb-row"><span class="lb-rank">8</span><div><div class="lb-name">Shreya Iyer</div><div class="lb-dept">Biotechnology</div></div><span class="lb-pts">1,530</span><span class="lb-co2">77</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="chart-card" style="margin-bottom:18px">
+            <h3>DEPT-WISE GREEN SCORE</h3>
+            <canvas id="deptChart" style="max-height:180px"></canvas>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎁</div>
+            <div class="card-title">How to Earn Carbon Credits</div>
+            <div class="card-desc" style="margin-top:8px">
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.8rem"><span>🚴 Cycle to campus</span><span style="color:var(--green);font-family:'Space Mono',monospace">+50 pts</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.8rem"><span>⚡ Charge EV off-peak</span><span style="color:var(--green);font-family:'Space Mono',monospace">+80 pts</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.8rem"><span>💡 Lab lights off by 9pm</span><span style="color:var(--green);font-family:'Space Mono',monospace">+30 pts</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.8rem"><span>♻️ Battery recycling drop</span><span style="color:var(--green);font-family:'Space Mono',monospace">+120 pts</span></div>
+              <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.8rem"><span>📊 Submit energy audit</span><span style="color:var(--green);font-family:'Space Mono',monospace">+200 pts</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMART ALERTS -->
+    <div id="alerts" class="inner-panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div>
+          <h3 style="font-weight:800;font-size:1rem;margin-bottom:16px">🔔 Live Smart Alerts</h3>
+          <div class="alert alert-green"><div class="alert-icon">✅</div><div><div class="alert-title">Solar Peak Achieved</div><div class="alert-desc">Solar array hit 92% efficiency at 12:14 PM. Surplus 48 kWh exported to state grid. Net revenue: ₹1,920.</div></div></div>
+          <div class="alert alert-orange"><div class="alert-icon">⚠️</div><div><div class="alert-title">Battery Pack BAT-07 — SOH Declining</div><div class="alert-desc">SOH dropped from 81% to 76% over 30 days. Recommend scheduling cell-balancing maintenance within 2 weeks.</div></div></div>
+          <div class="alert alert-blue"><div class="alert-icon">ℹ️</div><div><div class="alert-title">V2G Opportunity Window</div><div class="alert-desc">Grid demand spike forecast 6–9 PM. 18 EVs available for V2G. Estimated export: 72 kWh, Revenue: ₹2,880.</div></div></div>
+          <div class="alert alert-red"><div class="alert-icon">🚨</div><div><div class="alert-title">Lab Block — Anomalous Load</div><div class="alert-desc">Chemistry Lab B shows 340% above baseline load since 2 AM. Possible equipment left running. Investigate.</div></div></div>
+          <div class="alert alert-green"><div class="alert-icon">🏆</div><div><div class="alert-title">Monthly CO₂ Target Reached</div><div class="alert-desc">Campus has avoided 8.4 tonnes CO₂ this month — 112% of target. NAAC Green Report auto-generated.</div></div></div>
+        </div>
+        <div>
+          <h3 style="font-weight:800;font-size:1rem;margin-bottom:16px">📋 EPR Compliance Status</h3>
+          <div class="chart-card" style="margin-bottom:16px">
+            <div class="progress-wrap"><div class="progress-label"><span>Annual EPR Target</span><span>78%</span></div><div class="progress-bar"><div class="progress-fill" style="width:78%;background:var(--green)"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>Batteries Documented</span><span>94%</span></div><div class="progress-bar"><div class="progress-fill" style="width:94%;background:var(--blue)"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>OEM Credits Issued</span><span>62%</span></div><div class="progress-bar"><div class="progress-fill" style="width:62%;background:var(--orange)"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>NAAC Sustainability Score</span><span>88%</span></div><div class="progress-bar"><div class="progress-fill" style="width:88%;background:var(--green)"></div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔗 Blockchain Battery Passport</div>
+            <div class="card-desc" style="margin-top:10px">
+              <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--gray)">Ledger entries</span><span style="font-family:'Space Mono',monospace;color:var(--green)">24 packs</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--gray)">Chain integrity</span><span style="font-family:'Space Mono',monospace;color:var(--green)">✓ Verified</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:5px 0"><span style="color:var(--gray)">Last audit</span><span style="font-family:'Space Mono',monospace;color:var(--gray)">Today 09:14</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ COLLECTION ═══════════ -->
+<div id="collection" class="page">
+  <div class="form-wrap">
+    <div class="form-card">
+      <h2>Submit Retired Battery</h2>
+      <p>Register end-of-life EV batteries for campus redeployment. Our team arranges pickup within 3–5 business days and generates your EPR compliance certificate.</p>
+      <div class="form-row">
+        <div class="field"><label>Battery ID</label><input type="text" placeholder="e.g. BAT-2024-00421"/></div>
+        <div class="field"><label>Manufacturer</label><select><option>Select OEM</option><option>Tata Motors</option><option>Ola Electric</option><option>Ather Energy</option><option>MG Motor</option><option>Hyundai</option><option>Other</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Vehicle Model</label><input type="text" placeholder="e.g. Nexon EV"/></div>
+        <div class="field"><label>Battery Chemistry</label><select><option>NMC</option><option>LFP</option><option>NCA</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Rated Capacity (kWh)</label><input type="number" placeholder="e.g. 40.5"/></div>
+        <div class="field"><label>Battery Age (months)</label><input type="number" placeholder="e.g. 36"/></div>
+      </div>
+      <div class="field"><label>Estimated SOH % (if known)</label><input type="number" placeholder="e.g. 78" min="0" max="100"/></div>
+      <div class="field"><label>Intended Deployment</label><select><option>Campus Energy Storage</option><option>Solar Integration</option><option>EV Charging Hub</option><option>Telecom Tower</option><option>Grid Backup</option></select></div>
+      <div class="field">
+        <label>Upload Diagnostic File</label>
+        <div class="upload-area" onclick="this.querySelector('input').click()">
+          <input type="file" style="display:none"/>
+          <div style="font-size:2rem">📁</div>
+          <p>Click to upload BMS log, CSV, or PDF report<br><small>Max 10 MB · Generates EPR certificate automatically</small></p>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="submitForm()">Submit Battery for Collection</button>
+      <div class="success-msg" id="success-msg">
+        <div class="check">✅</div>
+        <h3>Submission Received!</h3>
+        <p>Battery registered. EPR Certificate #EPR-2025-0421 issued. Logistics team will contact you within 24 hours.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DIAGNOSTICS ═══════════ -->
+<div id="diagnostics" class="page">
+  <div class="diag-wrap">
+    <div class="diag-header">
+      <div>
+        <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:4px">AI Battery Diagnostics</h2>
+        <p style="color:var(--gray);font-size:0.86rem">ML-powered SOH grading · 94% accuracy · Campus deployment matching</p>
+      </div>
+      <div class="battery-selector">
+        <button class="bat-btn active" onclick="selectBat(this,0)">BAT-421</button>
+        <button class="bat-btn" onclick="selectBat(this,1)">BAT-388</button>
+        <button class="bat-btn" onclick="selectBat(this,2)">BAT-502</button>
+      </div>
+    </div>
+    <div class="diag-grid">
+      <div class="chart-card">
+        <h3>STATE OF HEALTH</h3>
+        <canvas id="gaugeChart"></canvas>
+        <div style="text-align:center;margin-top:8px">
+          <div class="grade-badge grade-A" id="grade-badge">A</div>
+          <div style="font-size:0.8rem;color:var(--gray)">Grade A — Optimal for Campus Solar Storage</div>
+        </div>
+        <div class="soh-bar" style="margin-top:14px"><div class="soh-fill" id="soh-fill" style="width:85%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.76rem;color:var(--gray)"><span>0%</span><span id="soh-pct" style="color:var(--green);font-weight:700;font-family:'Space Mono',monospace">85%</span><span>100%</span></div>
+      </div>
+      <div class="chart-card">
+        <h3>BATTERY DETAILS</h3>
+        <div class="metric-row"><span class="metric-key">Battery ID</span><span class="metric-val" id="d-id">BAT-421</span></div>
+        <div class="metric-row"><span class="metric-key">Manufacturer</span><span class="metric-val" id="d-mfr">Tata Motors</span></div>
+        <div class="metric-row"><span class="metric-key">Chemistry</span><span class="metric-val" id="d-chem">NMC</span></div>
+        <div class="metric-row"><span class="metric-key">Rated Capacity</span><span class="metric-val" id="d-cap">40.5 kWh</span></div>
+        <div class="metric-row"><span class="metric-key">Usable Capacity</span><span class="metric-val" id="d-usable">34.4 kWh</span></div>
+        <div class="metric-row"><span class="metric-key">Cycle Count</span><span class="metric-val" id="d-cycles">820</span></div>
+        <div class="metric-row"><span class="metric-key">Campus Match</span><span class="metric-val" id="d-use">Solar Storage</span></div>
+        <div class="metric-row"><span class="metric-key">Est. Remaining Life</span><span class="metric-val" id="d-life">4–6 years</span></div>
+        <div class="metric-row"><span class="metric-key">CO₂ Offset/yr</span><span class="metric-val" id="d-co2" style="color:var(--green)">2.4 tonnes</span></div>
+        <div style="margin-top:18px"><div class="tag tag-green" id="d-status">✓ Cleared for Campus Deployment</div></div>
+      </div>
+      <div class="chart-card" style="grid-column:1/-1">
+        <h3>CAPACITY vs DEGRADATION CURVE</h3>
+        <canvas id="degradChart" style="max-height:220px"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ TRACKING ═══════════ -->
+<div id="tracking" class="page">
+  <div class="track-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:34px">
+      <div>
+        <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:4px">Refurbishment Tracking</h2>
+        <p style="color:var(--gray);font-size:0.86rem">Battery BAT-421 · Tata Nexon EV · 40.5 kWh · Destined → IIT Delhi Campus</p>
+      </div>
+      <div class="tag tag-orange">🔧 In Refurbishment</div>
+    </div>
+    <div class="card" style="margin-bottom:30px">
+      <div style="font-size:0.78rem;color:var(--gray);margin-bottom:7px;font-weight:700">OVERALL PROGRESS</div>
+      <div class="soh-bar" style="height:13px"><div class="soh-fill" style="width:65%"></div></div>
+      <div style="font-size:0.8rem;color:var(--green);font-family:'Space Mono',monospace;margin-top:5px">65% Complete · Est. Campus Deployment: 2 Feb 2025</div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot done">✅</div><div class="tl-content"><div class="tl-stage">Battery Collected</div><div class="tl-date">12 Jan 2025 · Delhi Depot</div><div class="tl-desc">Battery received from Tata Motors dealer. Physical inspection complete. No structural damage. EPR record created.</div></div></div>
+      <div class="tl-item"><div class="tl-dot done">✅</div><div class="tl-content"><div class="tl-stage">AI Diagnostics Completed</div><div class="tl-date">14 Jan 2025 · ReVolt Lab</div><div class="tl-desc">SOH assessed at 85%. Grade A. Matched to IIT Delhi campus solar storage project. CO₂ offset: 2.4 t/yr.</div></div></div>
+      <div class="tl-item"><div class="tl-dot active-step">🔧</div><div class="tl-content"><div class="tl-stage">Refurbishment in Progress</div><div class="tl-date">18 Jan → Est. 28 Jan 2025</div><div class="tl-desc">Cell balancing, BMS replacement, and module repackaging underway at certified partner facility in Pune.</div><div class="progress-pct" style="margin-top:6px;font-size:0.75rem;color:var(--green);font-family:'Space Mono',monospace">⚙️ 40% of refurbishment complete</div></div></div>
+      <div class="tl-item"><div class="tl-dot pending">🔍</div><div class="tl-content"><div class="tl-stage" style="color:var(--gray)">Quality Certification</div><div class="tl-date" style="color:var(--navy4)">Est. 30 Jan 2025</div><div class="tl-desc" style="opacity:0.5">Third-party certification and safety testing per BIS IS 17855 standards.</div></div></div>
+      <div class="tl-item"><div class="tl-dot pending">🏫</div><div class="tl-content"><div class="tl-stage" style="color:var(--gray)">Campus Installation</div><div class="tl-date" style="color:var(--navy4)">Est. 2 Feb 2025</div><div class="tl-desc" style="opacity:0.5">Integration into IIT Delhi solar microgrid. BMS commissioning, monitoring app activation, NAAC logging enabled.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MARKETPLACE ═══════════ -->
+<div id="marketplace" class="page">
+  <div class="market-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:22px">
+      <div>
+        <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:4px">Battery Marketplace</h2>
+        <p style="color:var(--gray);font-size:0.86rem">Certified second-life packs ready for campus deployment</p>
+      </div>
+      <div class="filter-bar">
+        <select class="filter-select" onchange="filterMarket()"><option value="">All Capacities</option><option value="small">&lt; 20 kWh</option><option value="mid">20–50 kWh</option><option value="large">&gt; 50 kWh</option></select>
+        <select class="filter-select" onchange="filterMarket()"><option value="">All Grades</option><option value="A">Grade A (80%+)</option><option value="B">Grade B (70–80%)</option><option value="C">Grade C (60–70%)</option></select>
+        <select class="filter-select" onchange="filterMarket()"><option value="">All Applications</option><option>Solar</option><option>Telecom</option><option>Backup</option><option>Campus EV</option></select>
+      </div>
+    </div>
+    <div id="market-grid" class="card-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PLANS ═══════════ -->
+<div id="plans" class="page">
+  <div class="plans-wrap">
+    <div style="text-align:center;margin-bottom:38px">
+      <div class="tag tag-green" style="margin-bottom:14px">CAMPUS SUBSCRIPTION PLANS</div>
+      <h2 style="font-size:1.9rem;font-weight:800;letter-spacing:-1px;margin-bottom:10px">Storage as a Service</h2>
+      <p style="color:var(--gray);font-size:0.93rem;max-width:520px;margin:0 auto">No upfront battery cost. Subscribe monthly and get certified energy storage deployed across your campus — with live monitoring, carbon reports, and green gamification built in.</p>
+    </div>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-icon">🏫</div>
+        <div class="plan-name">College Starter</div>
+        <div class="plan-desc">For smaller campuses &lt;2,000 students seeking solar storage and diesel elimination.</div>
+        <div class="plan-price">₹14,999<span>/month</span></div>
+        <div class="plan-features">
+          <div class="plan-feat">100 kWh battery system (3 packs)</div>
+          <div class="plan-feat">Grade B or better (≥72% SOH)</div>
+          <div class="plan-feat">Campus energy dashboard</div>
+          <div class="plan-feat">Monthly CO₂ report (NAAC ready)</div>
+          <div class="plan-feat">EPR compliance certificate</div>
+        </div>
+        <button class="btn btn-outline" style="width:100%">Subscribe Now</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-icon">🏛️</div>
+        <div class="plan-name">University Pro</div>
+        <div class="plan-desc">For medium campuses 2,000–10,000 students with solar, EV charging, and V2G.</div>
+        <div class="plan-price">₹42,999<span>/month</span></div>
+        <div class="plan-features">
+          <div class="plan-feat">500 kWh system (12 packs)</div>
+          <div class="plan-feat">Grade A (≥82% SOH)</div>
+          <div class="plan-feat">Campus digital twin + energy map</div>
+          <div class="plan-feat">Green Gamification platform</div>
+          <div class="plan-feat">V2G fleet integration (up to 20 EVs)</div>
+          <div class="plan-feat">Blockchain EPR passport</div>
+        </div>
+        <button class="btn btn-primary" style="width:100%">Subscribe Now</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-icon">🌿</div>
+        <div class="plan-name">IIT / NIT Carbon Zero</div>
+        <div class="plan-desc">Full campus decarbonisation for large technical universities with 10,000+ students.</div>
+        <div class="plan-price">₹98,999<span>/month</span></div>
+        <div class="plan-features">
+          <div class="plan-feat">1,200+ kWh (30+ packs)</div>
+          <div class="plan-feat">Grade A premium batteries</div>
+          <div class="plan-feat">Full microgrid design & O&M</div>
+          <div class="plan-feat">Real-time NAAC/NIRF reporting</div>
+          <div class="plan-feat">Unlimited V2G fleet + smart alerts</div>
+          <div class="plan-feat">Dedicated energy manager</div>
+        </div>
+        <button class="btn btn-outline" style="width:100%">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ANALYTICS ═══════════ -->
+<div id="analytics" class="page">
+  <div class="analytics-wrap">
+    <div style="margin-bottom:26px">
+      <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:4px">Platform Analytics</h2>
+      <p style="color:var(--gray);font-size:0.86rem">Battery lifecycle data across all campus partners · <span class="live-dot"></span> Updated live</p>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-val">1,842</div><div class="kpi-label">Batteries Collected</div><div class="kpi-delta">↑ 12% this month</div></div>
+      <div class="kpi-card"><div class="kpi-val">1,204</div><div class="kpi-label">Batteries Reused</div><div class="kpi-delta">↑ 18% this month</div></div>
+      <div class="kpi-card"><div class="kpi-val">638</div><div class="kpi-label">Batteries Recycled</div><div class="kpi-delta">Grade C & below</div></div>
+      <div class="kpi-card"><div class="kpi-val">48</div><div class="kpi-label">Campus Partners</div><div class="kpi-delta">↑ 8 new this month</div></div>
+      <div class="kpi-card"><div class="kpi-val">48.2t</div><div class="kpi-label">CO₂ Saved</div><div class="kpi-delta">Lifetime total</div></div>
+      <div class="kpi-card"><div class="kpi-val">₹1.8Cr</div><div class="kpi-label">Campus Cost Savings</div><div class="kpi-delta">Vs diesel generators</div></div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card"><h3>MONTHLY BATTERY INTAKE</h3><canvas id="intakeChart"></canvas></div>
+      <div class="chart-card"><h3>BATTERY DISPOSITION</h3><canvas id="dispositionChart"></canvas></div>
+      <div class="chart-card"><h3>CAMPUS DEPLOYMENTS BY TYPE</h3><canvas id="sectorChart"></canvas></div>
+      <div class="chart-card"><h3>SOH DISTRIBUTION AT INTAKE</h3><canvas id="sohDistChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BATTERY PASSPORT ═══════════ -->
+<div id="passport" class="page">
+  <div class="passport-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px">
+      <div>
+        <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:4px">🔗 Blockchain Battery Passport</h2>
+        <p style="color:var(--gray);font-size:0.86rem">Immutable chain-of-custody for every battery — from OEM to campus deployment</p>
+      </div>
+      <div class="battery-selector">
+        <button class="bat-btn active" onclick="showPassport(0,this)">BAT-421</button>
+        <button class="bat-btn" onclick="showPassport(1,this)">BAT-388</button>
+        <button class="bat-btn" onclick="showPassport(2,this)">BAT-502</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
+      <div class="passport-card">
+        <div class="passport-id">BATTERY PASSPORT #BP-2025-0421</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:8px">
+          <div>
+            <div class="passport-title" id="pp-title">BAT-421 · Tata Nexon EV</div>
+            <div class="passport-hash" id="pp-hash">Ledger Hash: 0x3f8a2d91c4b7e05f1a6...d2c9 · Block #1,482,304 · Verified ✓</div>
+          </div>
+          <div class="passport-qr">
+            <div>📱<br>QR<br>CODE</div>
+          </div>
+        </div>
+
+        <div class="chain-timeline" id="pp-chain">
+          <div class="chain-event">
+            <div class="chain-connector"><div class="chain-dot"></div><div class="chain-line"></div></div>
+            <div class="chain-content">
+              <div class="chain-event-title">⚙️ Manufacturing — Tata Motors, Pune</div>
+              <div class="chain-event-date">March 2022 · Block #841,201</div>
+              <div class="chain-event-hash">0x1a2b3c4d...e5f6 · Tata Motors OEM Certificate #TM-2022-NX-0421</div>
+              <div class="chain-event-desc">40.5 kWh NMC pack. BIS IS 16046 certified. Battery ID assigned. First charge cycle logged.</div>
+            </div>
+          </div>
+          <div class="chain-event">
+            <div class="chain-connector"><div class="chain-dot"></div><div class="chain-line"></div></div>
+            <div class="chain-content">
+              <div class="chain-event-title">🚗 Vehicle Integration — Nexon EV MR</div>
+              <div class="chain-event-date">April 2022 · Block #844,512</div>
+              <div class="chain-event-hash">0x2c3d4e5f...f6a7 · VIN: MAT609213NTL02841</div>
+              <div class="chain-event-desc">Battery paired with vehicle. BMS telemetry streaming enabled. Owner: Fleet operator, Delhi.</div>
+            </div>
+          </div>
+          <div class="chain-event">
+            <div class="chain-connector"><div class="chain-dot"></div><div class="chain-line"></div></div>
+            <div class="chain-content">
+              <div class="chain-event-title">📊 EOL Assessment — SOH 85%</div>
+              <div class="chain-event-date">January 2025 · Block #1,480,901</div>
+              <div class="chain-event-hash">0x4e5f6a7b...c8d9 · 820 cycles logged · EOL trigger at 80% threshold</div>
+              <div class="chain-event-desc">Vehicle retired. Battery removed and transferred to ReVolt India under EPR mandate. All data preserved on-chain.</div>
+            </div>
+          </div>
+          <div class="chain-event">
+            <div class="chain-connector"><div class="chain-dot"></div><div class="chain-line"></div></div>
+            <div class="chain-content">
+              <div class="chain-event-title">🔬 ReVolt AI Diagnostics — Grade A</div>
+              <div class="chain-event-date">14 Jan 2025 · Block #1,481,440</div>
+              <div class="chain-event-hash">0x5f6a7b8c...d9e0 · ML Model v3.2 · Confidence 96.4%</div>
+              <div class="chain-event-desc">SOH confirmed 85%. Recommended for campus solar storage. CO₂ offset potential: 2.4 t/yr. EPR credit issued to Tata Motors.</div>
+            </div>
+          </div>
+          <div class="chain-event">
+            <div class="chain-connector"><div class="chain-dot"></div><div class="chain-line"></div></div>
+            <div class="chain-content">
+              <div class="chain-event-title">🔧 Refurbishment — Certified Partner, Pune</div>
+              <div class="chain-event-date">18–28 Jan 2025 · Block #1,482,100</div>
+              <div class="chain-event-hash">0x6a7b8c9d...e0f1 · Partner: GreenCell Tech Pvt Ltd · BIS IS 17855</div>
+              <div class="chain-event-desc">Cell balancing, BMS upgrade, new module casing. Quality tested at 34.4 kWh usable capacity. Safety certified.</div>
+            </div>
+          </div>
+          <div class="chain-event">
+            <div class="chain-connector"><div class="chain-dot" style="background:var(--orange)"></div><div class="chain-line" style="background:linear-gradient(to bottom,var(--orange),transparent)"></div></div>
+            <div class="chain-content">
+              <div class="chain-event-title" style="color:var(--orange)">🏫 Campus Deployment — IIT Delhi (Pending)</div>
+              <div class="chain-event-date" style="color:var(--orange)">Est. 2 Feb 2025 · Awaiting block confirmation</div>
+              <div class="chain-event-hash">Awaiting installation confirmation and BMS commissioning signal.</div>
+              <div class="chain-event-desc">Target: IIT Delhi solar microgrid, Pack Slot D-07. Monitoring app pre-configured.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="chart-card">
+          <h3>CERTIFICATIONS</h3>
+          <div class="cert-grid">
+            <div class="cert-item"><div class="cert-icon">🇮🇳</div><div class="cert-label">BIS IS 16046</div><div class="cert-val">✓ Valid</div></div>
+            <div class="cert-item"><div class="cert-icon">♻️</div><div class="cert-label">EPR Credit</div><div class="cert-val">Issued</div></div>
+            <div class="cert-item"><div class="cert-icon">🔥</div><div class="cert-label">Fire Safety</div><div class="cert-val">UL 9540</div></div>
+            <div class="cert-item"><div class="cert-icon">🌿</div><div class="cert-label">Carbon Credit</div><div class="cert-val">2.4 t/yr</div></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>BATTERY VITALS</h3>
+          <div class="metric-row"><span class="metric-key">Chemistry</span><span class="metric-val" id="pp-chem">NMC</span></div>
+          <div class="metric-row"><span class="metric-key">Original Capacity</span><span class="metric-val" id="pp-cap">40.5 kWh</span></div>
+          <div class="metric-row"><span class="metric-key">Current SOH</span><span class="metric-val" style="color:var(--green)" id="pp-soh">85%</span></div>
+          <div class="metric-row"><span class="metric-key">Cycle Count</span><span class="metric-val" id="pp-cycles">820</span></div>
+          <div class="metric-row"><span class="metric-key">Remaining Life</span><span class="metric-val" id="pp-life">4–6 yrs</span></div>
+          <div class="metric-row"><span class="metric-key">OEM</span><span class="metric-val" id="pp-oem">Tata Motors</span></div>
+        </div>
+        <div class="chart-card">
+          <h3>OWNERSHIP CHAIN</h3>
+          <div style="font-size:0.8rem;color:var(--gray);line-height:2">
+            <div>🏭 <strong style="color:var(--white)">Tata Motors</strong> → OEM</div>
+            <div>🚗 <strong style="color:var(--white)">Fleet Operator Delhi</strong> → Owner</div>
+            <div>♻️ <strong style="color:var(--white)">ReVolt India</strong> → Refurbisher</div>
+            <div>🏫 <strong style="color:var(--green)">IIT Delhi</strong> → Deployer (pending)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CAMPUS COMPARE ═══════════ -->
+<div id="compare" class="page">
+  <div class="compare-wrap">
+    <div style="margin-bottom:28px">
+      <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:4px">⚖️ Campus Carbon Comparison</h2>
+      <p style="color:var(--gray);font-size:0.86rem">See how leading campuses rank on carbon neutrality metrics after ReVolt deployment</p>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-col highlight">
+        <div class="compare-col-header best">
+          <div style="font-size:1.6rem;margin-bottom:6px">🥇</div>
+          <div class="compare-uni">IIT Delhi</div>
+          <div class="compare-badge">★ ReVolt University Pro</div>
+          <div style="font-family:'Space Mono',monospace;font-size:1.4rem;color:var(--green);margin-top:8px">92/100</div>
+          <div style="font-size:0.72rem;color:var(--gray)">Green Score</div>
+        </div>
+        <div class="compare-row"><span class="compare-key">Battery Storage</span><span class="compare-val best">840 kWh</span></div>
+        <div class="compare-row"><span class="compare-key">Solar Capacity</span><span class="compare-val best">1.2 MW</span></div>
+        <div class="compare-row"><span class="compare-key">Renewable Mix</span><span class="compare-val best">78%</span></div>
+        <div class="compare-row"><span class="compare-key">Diesel Dependency</span><span class="compare-val best">0%</span></div>
+        <div class="compare-row"><span class="compare-key">CO₂ Saved/yr</span><span class="compare-val best">186 t</span></div>
+        <div class="compare-row"><span class="compare-key">Monthly Savings</span><span class="compare-val best">₹4.2L</span></div>
+        <div class="compare-row"><span class="compare-key">EV Chargers</span><span class="compare-val best">24</span></div>
+        <div class="compare-row"><span class="compare-key">NAAC Score</span><span class="compare-val best">A++</span></div>
+        <div class="compare-row"><span class="compare-key">V2G Enabled</span><span class="compare-val best">✓ Yes</span></div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-header">
+          <div style="font-size:1.6rem;margin-bottom:6px">🥈</div>
+          <div class="compare-uni">IIT Bombay</div>
+          <div class="compare-badge" style="color:var(--gray)">ReVolt College Starter</div>
+          <div style="font-family:'Space Mono',monospace;font-size:1.4rem;color:var(--blue);margin-top:8px">74/100</div>
+          <div style="font-size:0.72rem;color:var(--gray)">Green Score</div>
+        </div>
+        <div class="compare-row"><span class="compare-key">Battery Storage</span><span class="compare-val">200 kWh</span></div>
+        <div class="compare-row"><span class="compare-key">Solar Capacity</span><span class="compare-val">480 kW</span></div>
+        <div class="compare-row"><span class="compare-key">Renewable Mix</span><span class="compare-val">51%</span></div>
+        <div class="compare-row"><span class="compare-key">Diesel Dependency</span><span class="compare-val" style="color:var(--orange)">22%</span></div>
+        <div class="compare-row"><span class="compare-key">CO₂ Saved/yr</span><span class="compare-val">68 t</span></div>
+        <div class="compare-row"><span class="compare-key">Monthly Savings</span><span class="compare-val">₹1.4L</span></div>
+        <div class="compare-row"><span class="compare-key">EV Chargers</span><span class="compare-val">8</span></div>
+        <div class="compare-row"><span class="compare-key">NAAC Score</span><span class="compare-val">A+</span></div>
+        <div class="compare-row"><span class="compare-key">V2G Enabled</span><span class="compare-val" style="color:var(--gray)">✗ No</span></div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-header">
+          <div style="font-size:1.6rem;margin-bottom:6px">🥉</div>
+          <div class="compare-uni">NIT Trichy</div>
+          <div class="compare-badge" style="color:var(--gray)">No ReVolt (Baseline)</div>
+          <div style="font-family:'Space Mono',monospace;font-size:1.4rem;color:#ef5350;margin-top:8px">38/100</div>
+          <div style="font-size:0.72rem;color:var(--gray)">Green Score</div>
+        </div>
+        <div class="compare-row"><span class="compare-key">Battery Storage</span><span class="compare-val" style="color:#ef5350">0 kWh</span></div>
+        <div class="compare-row"><span class="compare-key">Solar Capacity</span><span class="compare-val">120 kW</span></div>
+        <div class="compare-row"><span class="compare-key">Renewable Mix</span><span class="compare-val" style="color:#ef5350">14%</span></div>
+        <div class="compare-row"><span class="compare-key">Diesel Dependency</span><span class="compare-val" style="color:#ef5350">68%</span></div>
+        <div class="compare-row"><span class="compare-key">CO₂ Saved/yr</span><span class="compare-val" style="color:#ef5350">0 t</span></div>
+        <div class="compare-row"><span class="compare-key">Monthly Savings</span><span class="compare-val" style="color:#ef5350">₹0</span></div>
+        <div class="compare-row"><span class="compare-key">EV Chargers</span><span class="compare-val" style="color:#ef5350">0</span></div>
+        <div class="compare-row"><span class="compare-key">NAAC Score</span><span class="compare-val">A</span></div>
+        <div class="compare-row"><span class="compare-key">V2G Enabled</span><span class="compare-val" style="color:var(--gray)">✗ No</span></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+      <div class="chart-card">
+        <h3>CO₂ SAVED vs BASELINE (tonnes/yr)</h3>
+        <canvas id="compareChart1" style="max-height:200px"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>RENEWABLE MIX COMPARISON (%)</h3>
+        <canvas id="compareChart2" style="max-height:200px"></canvas>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-size:2rem">🚀</div>
+        <div>
+          <div class="card-title">Your Campus Could Be Next</div>
+          <div class="card-desc">NIT Trichy could save <strong style="color:var(--green)">164 tonnes CO₂/year</strong> and <strong style="color:var(--green)">₹3.8L/month</strong> by upgrading to ReVolt University Pro. Payback in just 2.3 years.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showPage('roi')" style="margin-left:auto">Calculate My ROI →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SUSTAINABILITY REPORT ═══════════ -->
+<div id="report" class="page">
+  <div class="report-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:24px">
+      <div>
+        <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:4px">📄 Sustainability Report Generator</h2>
+        <p style="color:var(--gray);font-size:0.86rem">Auto-generate NAAC/NBA-ready carbon sustainability reports for your campus</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <select class="filter-select" id="reportCampus">
+          <option>IIT Delhi</option><option>IIT Bombay</option><option>NIT Trichy</option><option>Custom Campus</option>
+        </select>
+        <select class="filter-select" id="reportPeriod">
+          <option>Annual 2024–25</option><option>Q3 2024–25</option><option>Q2 2024–25</option>
+        </select>
+        <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+      </div>
+    </div>
+
+    <div class="report-preview" id="reportPreview">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #00c853;padding-bottom:16px;margin-bottom:20px">
+        <div>
+          <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:#555;margin-bottom:4px">SUSTAINABILITY REPORT · ANNUAL 2024–25</div>
+          <h1 id="rpt-title">IIT Delhi — Carbon Neutrality Progress Report</h1>
+          <div style="font-size:0.78rem;color:#555;margin-top:4px">Prepared by ReVolt India Platform · Generated March 2025 · NAAC Compliant</div>
+        </div>
+        <div style="text-align:right;font-size:0.78rem;color:#0a7c3e;font-weight:700">
+          <div style="font-size:2rem">🌿</div>
+          ReVolt Certified<br>Green Campus
+        </div>
+      </div>
+
+      <h2>Executive Summary</h2>
+      <p id="rpt-summary">IIT Delhi has achieved a <strong>78% renewable energy mix</strong> in FY 2024–25, powered by 840 kWh of second-life EV battery storage deployed across 4 campus zones. Total CO₂ avoided this year: <strong>186 tonnes</strong>, equivalent to planting 8,370 trees. Diesel generator usage has been reduced to zero, saving the institution <strong>₹50.4 lakhs annually</strong>.</p>
+
+      <h2>Key Performance Indicators</h2>
+      <div class="report-kpi-row" id="rpt-kpis">
+        <div class="report-kpi"><div class="report-kpi-val">186 t</div><div class="report-kpi-label">CO₂ Avoided (yr)</div></div>
+        <div class="report-kpi"><div class="report-kpi-val">78%</div><div class="report-kpi-label">Renewable Mix</div></div>
+        <div class="report-kpi"><div class="report-kpi-val">₹50.4L</div><div class="report-kpi-label">Annual Savings</div></div>
+        <div class="report-kpi"><div class="report-kpi-val">840 kWh</div><div class="report-kpi-label">Storage Deployed</div></div>
+        <div class="report-kpi"><div class="report-kpi-val">24</div><div class="report-kpi-label">EV Chargers</div></div>
+        <div class="report-kpi"><div class="report-kpi-val">A++</div><div class="report-kpi-label">NAAC Green Score</div></div>
+      </div>
+
+      <h2>Battery Deployment Summary</h2>
+      <table class="report-table">
+        <tr><th>Zone</th><th>Battery Packs</th><th>Capacity (kWh)</th><th>SOH Avg</th><th>CO₂ Offset (t/yr)</th></tr>
+        <tr><td>Academic Block</td><td>6</td><td>240</td><td>84%</td><td>52</td></tr>
+        <tr><td>Research Labs</td><td>8</td><td>320</td><td>82%</td><td>69</td></tr>
+        <tr><td>Hostel Complex</td><td>5</td><td>200</td><td>86%</td><td>43</td></tr>
+        <tr><td>EV Charging Hub</td><td>5</td><td>200</td><td>83%</td><td>43</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>24</strong></td><td><strong>960</strong></td><td><strong>84%</strong></td><td><strong>207</strong></td></tr>
+      </table>
+
+      <h2>Compliance & Certifications</h2>
+      <p>All battery systems comply with <strong>BIS IS 17855</strong> (stationary storage), <strong>IS 16046</strong> (Li-ion cells), and MNRE guidelines for solar-storage integration. EPR certificates have been issued to all OEM partners. This report is submitted as evidence for NAAC Criterion 7 (Institutional Values and Best Practices) and NIRF Innovation ranking criteria.</p>
+
+      <div style="margin-top:24px;padding:14px;background:#e8f5e9;border-radius:8px;border:1px solid #b2dfdb;font-size:0.78rem;color:#555">
+        <strong>Disclaimer:</strong> This report was auto-generated by the ReVolt India Platform using real-time sensor data, BMS telemetry, and grid metering records. Data is cryptographically signed on the ReVolt blockchain ledger. Report ID: RPT-IIT-DEL-2025-001.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ROI CONFIGURATOR ═══════════ -->
+<div id="roi" class="page">
+  <div class="roi-wrap">
+    <div style="margin-bottom:28px">
+      <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:4px">💰 ROI Configurator</h2>
+      <p style="color:var(--gray);font-size:0.86rem">Build your custom financial model for campus battery deployment — real numbers, real savings</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div class="chart-card">
+        <h3>CONFIGURE YOUR CAMPUS</h3>
+        <div style="margin-top:10px">
+          <div class="field"><label>Institution Type</label>
+            <select id="roiType" onchange="calcROI()">
+              <option value="iit">IIT / NIT (Large Technical)</option>
+              <option value="univ">State University (Medium)</option>
+              <option value="college">Private College (Small)</option>
+              <option value="school">School / Jr College</option>
+            </select>
+          </div>
+          <div class="field"><label>Current Monthly Diesel Bill (₹)</label>
+            <div class="range-wrap">
+              <input type="range" id="roiDiesel" min="20000" max="800000" value="200000" step="10000" oninput="calcROI()">
+              <div class="range-labels"><span>₹20k</span><span id="roiDieselVal">₹2,00,000</span><span>₹8L</span></div>
+            </div>
+          </div>
+          <div class="field"><label>Monthly Electricity Bill (₹)</label>
+            <div class="range-wrap">
+              <input type="range" id="roiGrid" min="50000" max="2000000" value="350000" step="10000" oninput="calcROI()">
+              <div class="range-labels"><span>₹50k</span><span id="roiGridVal">₹3,50,000</span><span>₹20L</span></div>
+            </div>
+          </div>
+          <div class="field"><label>Solar Rooftop Installed (kWp)</label>
+            <div class="range-wrap">
+              <input type="range" id="roiSolar" min="0" max="3000" value="600" step="50" oninput="calcROI()">
+              <div class="range-labels"><span>0</span><span id="roiSolarVal">600 kWp</span><span>3000</span></div>
+            </div>
+          </div>
+          <div class="field"><label>Plan Selected</label>
+            <select id="roiPlan" onchange="calcROI()">
+              <option value="14999">College Starter — ₹14,999/mo</option>
+              <option value="42999" selected>University Pro — ₹42,999/mo</option>
+              <option value="98999">IIT Carbon Zero — ₹98,999/mo</option>
+            </select>
+          </div>
+          <div class="field"><label>Government Subsidy Eligible?</label>
+            <select id="roiSubsidy" onchange="calcROI()">
+              <option value="0.3">Yes — MNRE 30% subsidy</option>
+              <option value="0">No subsidy</option>
+              <option value="0.5">Yes — State scheme 50%</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="chart-card" style="text-align:center;padding:32px">
+          <div style="font-size:0.78rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Annual Net Savings</div>
+          <div class="roi-big" id="roiBig">₹38.4L</div>
+          <div class="roi-label">After plan subscription cost</div>
+          <div style="margin-top:16px;padding:12px;background:var(--green-glow);border:1px solid var(--green);border-radius:10px">
+            <div style="font-size:0.78rem;color:var(--gray)">Payback Period</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--green)" id="roiPayback">2.1 years</div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>FINANCIAL BREAKDOWN</h3>
+          <div class="roi-table">
+            <div class="roi-tr"><span class="roi-key">Diesel savings/yr</span><span class="roi-val pos" id="roiDsav">+₹24.0L</span></div>
+            <div class="roi-tr"><span class="roi-key">Grid bill reduction/yr</span><span class="roi-val pos" id="roiGsav">+₹28.8L</span></div>
+            <div class="roi-tr"><span class="roi-key">V2G revenue/yr</span><span class="roi-val pos" id="roiV2g">+₹3.2L</span></div>
+            <div class="roi-tr"><span class="roi-key">Carbon credits/yr</span><span class="roi-val pos" id="roiCcred">+₹1.8L</span></div>
+            <div class="roi-tr"><span class="roi-key">ReVolt plan cost/yr</span><span class="roi-val neg" id="roiPlanCost">−₹5.2L</span></div>
+            <div class="roi-tr"><span class="roi-key">Maintenance/yr</span><span class="roi-val neg">−₹0.8L</span></div>
+            <div class="roi-tr" style="border-top:1px solid var(--green);margin-top:4px;padding-top:12px"><span class="roi-key" style="font-weight:700;color:var(--white)">Net Annual Savings</span><span class="roi-val pos" style="font-size:1rem" id="roiNet">+₹51.8L</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+      <div class="chart-card">
+        <h3>10-YEAR CUMULATIVE SAVINGS (₹ Lakhs)</h3>
+        <canvas id="roiChart" style="max-height:200px"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>SAVINGS BREAKDOWN</h3>
+        <canvas id="roiPieChart" style="max-height:200px"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CARBON TICKER ═══════════ -->
+<div class="carbon-bar">
+  <div class="carbon-item"><span class="live-dot"></span> <span>Live</span></div>
+  <div class="carbon-item">🌿 <span>Carbon Saved:</span> <span class="carbon-val">48.2 tonnes CO₂</span></div>
+  <div class="carbon-item">♻️ <span>Batteries Redeployed:</span> <span class="carbon-val">1,204</span></div>
+  <div class="carbon-item">⚡ <span>Energy Redeployed:</span> <span class="carbon-val">38.6 MWh</span></div>
+  <div class="carbon-item">🏫 <span>Campus Partners:</span> <span class="carbon-val">48</span></div>
+  <div class="carbon-item">🚫 <span>Diesel Displaced:</span> <span class="carbon-val">1,84,000 L</span></div>
+</div>
+
+<script>
+/* ─── NAV ─── */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = ['landing','campus','collection','diagnostics','tracking','marketplace','plans','analytics'];
+  const idx = tabs.indexOf(id);
+  if(idx>=0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  if(id==='diagnostics') setTimeout(initDiagCharts,100);
+  if(id==='analytics') setTimeout(initAnalyticsCharts,100);
+  if(id==='marketplace') renderMarket();
+  if(id==='campus') setTimeout(initCampusCharts,100);
+}
+
+function showInner(page, panel) {
+  document.querySelectorAll(`#${page} .inner-panel`).forEach(p => p.classList.remove('active'));
+  document.querySelectorAll(`#${page} .inner-tab`).forEach(t => t.classList.remove('active'));
+  document.getElementById(panel).classList.add('active');
+  event.target.classList.add('active');
+  if(panel==='simulation') setTimeout(runSimulation,100);
+  if(panel==='leaderboard') setTimeout(initLeaderboardChart,100);
+  if(panel==='carbon-calc') { setTimeout(()=>{ calcCarbon(); initCo2Chart(); },100); }
+  if(panel==='energy-map') setTimeout(initEnergyMixChart,100);
+}
+
+/* ─── ANIMATED STATS ─── */
+function animateCount(el, target, suffix='') {
+  let start=0; const dur=1800;
+  const step=ts=>{ if(!start)start=ts; const p=Math.min((ts-start)/dur,1); el.textContent=Math.floor(p*target)+suffix; if(p<1)requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+setTimeout(()=>{
+  animateCount(document.getElementById('s1'),1842);
+  animateCount(document.getElementById('s2'),38,' MWh');
+  animateCount(document.getElementById('s3'),48,' t');
+  animateCount(document.getElementById('s4'),48);
+},400);
+
+/* ─── FORM ─── */
+function submitForm() {
+  document.getElementById('success-msg').style.display='block';
+  document.getElementById('success-msg').scrollIntoView({behavior:'smooth'});
+}
+
+/* ─── MAP TOOLTIP ─── */
+function showTip(e, html) {
+  const tip = document.getElementById('nodeTip');
+  tip.innerHTML = html; tip.style.display='block';
+  const rect = e.target.getBoundingClientRect();
+  const mapRect = document.getElementById('campusMap').getBoundingClientRect();
+  tip.style.left = (rect.left - mapRect.left + 30)+'px';
+  tip.style.top = (rect.top - mapRect.top - 10)+'px';
+}
+function hideTip() { document.getElementById('nodeTip').style.display='none'; }
+
+/* ─── BATTERY DATA ─── */
+const batteries = [
+  {id:'BAT-421',mfr:'Tata Motors',chem:'NMC',cap:'40.5 kWh',usable:'34.4 kWh',cycles:820,use:'Solar Storage',life:'4–6 years',soh:85,grade:'A',co2:'2.4 tonnes',status:'✓ Cleared for Campus Deployment'},
+  {id:'BAT-388',mfr:'Ola Electric',chem:'LFP',cap:'22.0 kWh',usable:'16.9 kWh',cycles:1140,use:'EV Charging Hub',life:'3–5 years',soh:77,grade:'B',co2:'1.6 tonnes',status:'✓ Cleared for Campus Deployment'},
+  {id:'BAT-502',mfr:'Hyundai',chem:'NMC',cap:'64.8 kWh',usable:'41.5 kWh',cycles:960,use:'Grid Backup',life:'2–4 years',soh:64,grade:'C',co2:'0.8 tonnes',status:'⚠ Recycling Recommended'},
+];
+let diagCharts={};
+function selectBat(btn,idx){
+  document.querySelectorAll('.bat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const b=batteries[idx];
+  document.getElementById('d-id').textContent=b.id;
+  document.getElementById('d-mfr').textContent=b.mfr;
+  document.getElementById('d-chem').textContent=b.chem;
+  document.getElementById('d-cap').textContent=b.cap;
+  document.getElementById('d-usable').textContent=b.usable;
+  document.getElementById('d-cycles').textContent=b.cycles;
+  document.getElementById('d-use').textContent=b.use;
+  document.getElementById('d-life').textContent=b.life;
+  document.getElementById('d-co2').textContent=b.co2;
+  document.getElementById('soh-fill').style.width=b.soh+'%';
+  document.getElementById('soh-pct').textContent=b.soh+'%';
+  document.getElementById('d-status').textContent=b.status;
+  const gb=document.getElementById('grade-badge');
+  gb.textContent=b.grade; gb.className='grade-badge grade-'+b.grade;
+  updateGauge(b.soh);
+}
+
+function initDiagCharts(){
+  if(diagCharts.gauge){diagCharts.gauge.destroy();diagCharts.degrad&&diagCharts.degrad.destroy();}
+  const gctx=document.getElementById('gaugeChart').getContext('2d');
+  diagCharts.gauge=new Chart(gctx,{type:'doughnut',data:{datasets:[{data:[85,15],backgroundColor:['#00e676','#1a2540'],borderWidth:0,circumference:270,rotation:225}]},options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}},responsive:true}});
+  const dctx=document.getElementById('degradChart').getContext('2d');
+  const labels=['0','6','12','18','24','30','36','42','48','54','60'];
+  const orig=[100,97,95,93,91,89,87,86,85,84,83];
+  const pred=[null,null,null,null,null,null,null,null,85,82,79];
+  diagCharts.degrad=new Chart(dctx,{type:'line',data:{labels,datasets:[{label:'Actual SOH%',data:orig,borderColor:'#00e676',backgroundColor:'rgba(0,230,118,0.1)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:3},{label:'Projected SOH%',data:pred,borderColor:'#64b5f6',backgroundColor:'rgba(100,181,246,0.05)',fill:false,tension:0.4,borderWidth:2,borderDash:[5,4],pointRadius:3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#8fa3b1',font:{family:'Syne',size:11}}}},scales:{x:{ticks:{color:'#8fa3b1'},grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Months',color:'#8fa3b1',font:{size:10}}},y:{ticks:{color:'#8fa3b1'},grid:{color:'rgba(255,255,255,0.04)'},min:60,max:105}}}});
+}
+function updateGauge(soh){
+  if(!diagCharts.gauge)return;
+  diagCharts.gauge.data.datasets[0].data=[soh,100-soh];
+  const col=soh>=80?'#00e676':soh>=70?'#ffc107':'#ff5722';
+  diagCharts.gauge.data.datasets[0].backgroundColor[0]=col;
+  diagCharts.gauge.update();
+}
+
+/* ─── MARKETPLACE ─── */
+const marketData=[
+  {id:'RV-001',cap:'40.5 kWh',soh:85,grade:'A',price:'₹1,24,000',app:'Campus Solar',tags:['mid']},
+  {id:'RV-002',cap:'22 kWh',soh:78,grade:'B',price:'₹58,500',app:'Campus EV',tags:['small']},
+  {id:'RV-003',cap:'64.8 kWh',soh:83,grade:'A',price:'₹1,98,000',app:'Microgrid',tags:['large']},
+  {id:'RV-004',cap:'15 kWh',soh:72,grade:'B',price:'₹34,000',app:'Backup',tags:['small']},
+  {id:'RV-005',cap:'30 kWh',soh:88,grade:'A',price:'₹92,000',app:'Campus Solar',tags:['mid']},
+  {id:'RV-006',cap:'100 kWh',soh:81,grade:'A',price:'₹2,80,000',app:'Campus EV Hub',tags:['large']},
+];
+function renderMarket(){
+  const grid=document.getElementById('market-grid');
+  grid.innerHTML=marketData.map(b=>`
+    <div class="bat-card">
+      <div class="bat-card-header"><div><div class="bat-id">${b.id}</div><div class="bat-cap">${b.cap}</div></div><div class="grade-badge grade-${b.grade}" style="width:36px;height:36px;font-size:0.95rem">${b.grade}</div></div>
+      <div class="bat-soh">SOH: <span style="color:var(--green);font-weight:700;font-family:'Space Mono',monospace">${b.soh}%</span></div>
+      <div class="soh-bar"><div class="soh-fill" style="width:${b.soh}%"></div></div>
+      <div class="bat-app">🏫 Application: <strong>${b.app}</strong></div>
+      <div class="bat-price">${b.price}</div>
+      <div class="bat-actions"><button class="btn btn-primary btn-sm">Buy Now</button><button class="btn btn-ghost btn-sm">Get Quote</button></div>
+    </div>`).join('');
+}
+function filterMarket(){renderMarket();}
+
+/* ─── ANALYTICS ─── */
+let aCharts={};
+function initAnalyticsCharts(){
+  Object.values(aCharts).forEach(c=>{try{c.destroy()}catch(e){}});
+  const months=['Aug','Sep','Oct','Nov','Dec','Jan'];
+  const mkChart=(id,type,data,opts={})=>{
+    const ctx=document.getElementById(id); if(!ctx)return;
+    return new Chart(ctx,{type,data,options:{responsive:true,plugins:{legend:{labels:{color:'#8fa3b1',font:{family:'Syne',size:11}}},...(opts.plugins||{})},scales:type==='bar'||type==='line'?{x:{ticks:{color:'#8fa3b1',font:{family:'Space Mono',size:10}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8fa3b1',font:{family:'Space Mono',size:10}},grid:{color:'rgba(255,255,255,0.04)'}}}:{},...opts}});
+  };
+  aCharts.intake=mkChart('intakeChart','bar',{labels:months,datasets:[{label:'Batteries Collected',data:[180,220,195,280,310,342],backgroundColor:'rgba(0,230,118,0.6)',borderRadius:6,borderWidth:0}]});
+  aCharts.disp=mkChart('dispositionChart','doughnut',{labels:['Campus Reuse','Recycled','Refurbishment','Diagnostics'],datasets:[{data:[1204,638,145,55],backgroundColor:['#00e676','#64b5f6','#ffc107','#ff7043'],borderWidth:0}]},{plugins:{legend:{position:'right',labels:{color:'#8fa3b1',font:{family:'Syne',size:11}}}}});
+  aCharts.sector=mkChart('sectorChart','bar',{labels:['Campus Solar','Campus EV','Microgrid','Telecom','Grid Backup'],datasets:[{label:'Deployments',data:[188,92,55,42,27],backgroundColor:'rgba(100,181,246,0.6)',borderRadius:6,borderWidth:0}]},{indexAxis:'y'});
+  aCharts.sohDist=mkChart('sohDistChart','bar',{labels:['60–65%','65–70%','70–75%','75–80%','80–85%','85–90%'],datasets:[{label:'Count',data:[38,92,185,280,410,290],backgroundColor:'rgba(0,230,118,0.5)',borderRadius:6,borderWidth:0}]});
+}
+
+/* ─── CAMPUS CHARTS ─── */
+let campusCharts={};
+function initCampusCharts(){
+  initEnergyMixChart();
+}
+function initEnergyMixChart(){
+  if(campusCharts.mix){try{campusCharts.mix.destroy()}catch(e){}}
+  const ctx=document.getElementById('energyMixChart'); if(!ctx)return;
+  campusCharts.mix=new Chart(ctx,{type:'doughnut',data:{labels:['Solar Direct','Battery Storage','V2G Export','Grid Import'],datasets:[{data:[48,30,12,10],backgroundColor:['#ffc107','#00e676','#ce93d8','#64b5f6'],borderWidth:0}]},options:{responsive:true,cutout:'60%',plugins:{legend:{position:'right',labels:{color:'#8fa3b1',font:{family:'Syne',size:10}}}}}});
+}
+
+/* ─── CARBON CALCULATOR ─── */
+let co2Chart=null;
+function calcCarbon(){
+  const size=+document.getElementById('campusSize').value;
+  const diesel=+document.getElementById('dieselKva').value;
+  const solar=+document.getElementById('solarKwp').value;
+  const hrs=+document.getElementById('loadHrs').value;
+  const stud=+document.getElementById('students').value;
+  document.getElementById('sizeVal').textContent=size+' acres';
+  document.getElementById('dieselVal').textContent=diesel+' kVA';
+  document.getElementById('solarVal').textContent=solar+' kWp';
+  document.getElementById('hrsVal').textContent=hrs+' hrs';
+  document.getElementById('studVal').textContent=stud.toLocaleString();
+
+  const dieselLitres=diesel*0.24*hrs*365;
+  const co2=Math.round(dieselLitres*2.68/1000*0.85);
+  const costSaved=Math.round(dieselLitres*90/100000);
+  const packs=Math.max(3,Math.round(solar*0.5/35));
+  const trees=Math.round(co2*45);
+  const payback=Math.max(1.5,Math.round((packs*400000)/(costSaved*100000)*10)/10);
+
+  document.getElementById('co2Saved').textContent=co2;
+  document.getElementById('dieselSaved').textContent=Math.round(dieselLitres).toLocaleString();
+  document.getElementById('costSaved').textContent=costSaved;
+  document.getElementById('batteryCount').textContent=packs;
+  document.getElementById('treesEq').textContent=trees.toLocaleString();
+  document.getElementById('payback').textContent=payback+'y';
+}
+function initCo2Chart(){
+  if(co2Chart){try{co2Chart.destroy()}catch(e){}}
+  const ctx=document.getElementById('co2Chart'); if(!ctx)return;
+  const size=+document.getElementById('campusSize').value||80;
+  const diesel=+document.getElementById('dieselKva').value||400;
+  const hrs=+document.getElementById('loadHrs').value||14;
+  const dieselLitres=diesel*0.24*hrs*365;
+  const annualCo2=Math.round(dieselLitres*2.68/1000*0.85);
+  const years=Array.from({length:10},(_,i)=>`Yr ${i+1}`);
+  const vals=years.map((_,i)=>Math.round(annualCo2*(i+1)));
+  co2Chart=new Chart(ctx,{type:'bar',data:{labels:years,datasets:[{label:'Cumulative CO₂ Saved (t)',data:vals,backgroundColor:'rgba(0,230,118,0.55)',borderRadius:4,borderWidth:0}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8fa3b1',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8fa3b1',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+}
+setTimeout(calcCarbon,200);
+
+/* ─── SIMULATION ─── */
+let simCharts={};
+function runSimulation(){
+  const solar=+document.getElementById('simSolar').value||500;
+  const storage=+document.getElementById('simStorage').value||840;
+  const season=document.getElementById('simSeason').value||'monsoon';
+  const v2g=+document.getElementById('simV2g').value||10;
+  const hours=Array.from({length:24},(_,i)=>i+':00');
+  const factors={summer:[0,0,0,0,0,0.1,0.35,0.6,0.8,0.95,1.0,1.0,0.98,0.95,0.9,0.8,0.65,0.45,0.2,0.05,0,0,0,0],monsoon:[0,0,0,0,0,0.05,0.15,0.3,0.45,0.55,0.6,0.62,0.58,0.52,0.48,0.38,0.25,0.12,0.04,0,0,0,0,0],winter:[0,0,0,0,0,0,0.08,0.28,0.52,0.72,0.86,0.9,0.88,0.82,0.72,0.6,0.42,0.22,0.06,0,0,0,0,0]};
+  const f=factors[season];
+  const solarData=f.map(v=>Math.round(v*solar));
+  const loadBase=[60,50,45,42,42,44,55,80,130,160,170,175,165,150,145,155,160,140,110,95,85,78,70,65];
+  const batteryData=hours.map((_,i)=>{
+    const net=solarData[i]-loadBase[i];
+    return net<0?Math.max(-storage/4,net):Math.min(storage/4,net);
+  });
+  const gridData=hours.map((_,i)=>{
+    const net=solarData[i]+batteryData[i]-loadBase[i];
+    return net<0?Math.max(-100,net):0;
+  });
+
+  if(simCharts.main){try{simCharts.main.destroy()}catch(e){}}
+  const ctx=document.getElementById('simChart'); if(!ctx)return;
+  simCharts.main=new Chart(ctx,{type:'line',data:{labels:hours,datasets:[{label:'Solar (kW)',data:solarData,borderColor:'#ffc107',backgroundColor:'rgba(255,193,7,0.1)',fill:true,tension:0.4,borderWidth:2,pointRadius:0},{label:'Load (kW)',data:loadBase,borderColor:'#64b5f6',backgroundColor:'rgba(100,181,246,0.05)',fill:false,tension:0.4,borderWidth:2,pointRadius:0,borderDash:[5,3]},{label:'Battery (kW)',data:batteryData.map(Math.abs),borderColor:'#00e676',backgroundColor:'rgba(0,230,118,0.06)',fill:true,tension:0.4,borderWidth:1.5,pointRadius:0}]},options:{responsive:true,plugins:{legend:{labels:{color:'#8fa3b1',font:{family:'Syne',size:11}}}},scales:{x:{ticks:{color:'#8fa3b1',font:{size:9}},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#8fa3b1'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+
+  // SOC chart
+  if(simCharts.soc){try{simCharts.soc.destroy()}catch(e){}}
+  const ctx2=document.getElementById('socChart'); if(!ctx2)return;
+  let soc=60;
+  const socData=hours.map((_,i)=>{
+    soc=Math.max(20,Math.min(100,soc+(batteryData[i]/storage*10)));
+    return Math.round(soc);
+  });
+  simCharts.soc=new Chart(ctx2,{type:'line',data:{labels:hours,datasets:[{label:'Battery SOC %',data:socData,borderColor:'#00e676',backgroundColor:'rgba(0,230,118,0.08)',fill:true,tension:0.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8fa3b1',font:{size:9}},grid:{color:'rgba(255,255,255,0.03)'}},y:{min:0,max:100,ticks:{color:'#8fa3b1'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+}
+
+/* ─── LEADERBOARD CHART ─── */
+let lbChart=null;
+function initLeaderboardChart(){
+  if(lbChart){try{lbChart.destroy()}catch(e){}}
+  const ctx=document.getElementById('deptChart'); if(!ctx)return;
+  lbChart=new Chart(ctx,{type:'bar',data:{labels:['Electrical','CS & AI','Mech','Civil','Energy','Materials','Biotech'],datasets:[{label:'Green Score',data:[2840,2210,2615,2480,1980,1744,1530],backgroundColor:['rgba(0,230,118,0.7)','rgba(0,230,118,0.55)','rgba(0,230,118,0.5)','rgba(0,230,118,0.45)','rgba(100,181,246,0.5)','rgba(100,181,246,0.45)','rgba(100,181,246,0.4)'],borderRadius:5,borderWidth:0}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8fa3b1',font:{size:9}},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#8fa3b1'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+}
+
+/* ─── PAGE NAV (updated with new pages) ─── */
+const ALL_PAGES = ['landing','campus','collection','diagnostics','tracking','marketplace','plans','analytics','passport','compare','report','roi'];
+
+/* ─── CHATBOT ─── */
+function toggleChat(){
+  const w=document.getElementById('chatWidget');
+  w.classList.toggle('open');
+}
+
+const botKnowledge = {
+  'roi': 'Campus battery deployments typically deliver **2–3 year payback**. A 500 kWh system saves ₹38–52L/year through: diesel elimination (₹20–24L), grid bill reduction (₹28L), V2G revenue (₹3L), and carbon credits (₹1.8L). The ReVolt University Pro plan at ₹42,999/mo is net-positive from month 1 for campuses with diesel bills >₹1.5L/month.',
+  'v2g': 'V2G (Vehicle-to-Grid) lets campus EV fleets **export power back to the microgrid** during peak demand (6–9 PM). Each EV contributes ~4 kW. A fleet of 20 EVs exports 80 kW peak — enough for an entire hostel block. ReVolt\'s BMS coordinates charging schedules to maximize battery life while maximising grid revenue.',
+  'epr': 'Under India\'s Battery Waste Management Rules 2022, OEMs must ensure **extended producer responsibility (EPR)** for end-of-life EV batteries. ReVolt issues EPR certificates automatically on our blockchain ledger. OEMs earn EPR credits; campuses get certified second-life batteries. CPCB-registered and compliant.',
+  'solar': '**LFP (Lithium Iron Phosphate)** is best for campus solar storage — 4,000+ cycle life, safer at high temps (critical in India), performs well in partial-charge states. NMC is higher density and better for compact installations. ReVolt grades all batteries and matches chemistry to use case automatically.',
+  'soh': 'State of Health (SOH) measures a battery\'s remaining capacity vs original. EV batteries "retire" at **80% SOH** but are ideal for stationary storage at 70–85%. Our AI model predicts SOH with 94% accuracy using BMS telemetry — cycle count, temperature history, charge patterns. Grade A = 80%+, Grade B = 70–80%.',
+  'naac': 'ReVolt generates **NAAC Criterion 7** sustainability reports automatically. Our platform logs: renewable energy percentage, CO₂ avoided, diesel displaced, EV charging stats, and student green engagement scores. Reports are cryptographically signed and ready for NAAC/NIRF submission with one click.',
+  'cost': 'Second-life batteries cost **40–60% less** than new batteries. A 40 kWh pack costs ~₹80,000–1,24,000 vs ₹2,00,000+ for new. Campus plans start at ₹14,999/month with zero upfront cost — we handle installation, monitoring, and maintenance.',
+  'default': 'Great question! ReVolt India is a full-stack second-life EV battery platform. Key capabilities: AI battery diagnostics, campus microgrid integration, V2G, blockchain EPR tracking, green gamification for students, and automated NAAC sustainability reports. What specifically would you like to know more about?'
+};
+
+function getBotResponse(msg) {
+  msg = msg.toLowerCase();
+  if(msg.includes('roi')||msg.includes('return')||msg.includes('savings')||msg.includes('payback')||msg.includes('cost')) return botKnowledge.roi;
+  if(msg.includes('v2g')||msg.includes('vehicle to grid')||msg.includes('vehicle-to-grid')) return botKnowledge.v2g;
+  if(msg.includes('epr')||msg.includes('compliance')||msg.includes('regulation')||msg.includes('cpcb')) return botKnowledge.epr;
+  if(msg.includes('solar')||msg.includes('chemistry')||msg.includes('lfp')||msg.includes('nmc')||msg.includes('best battery')) return botKnowledge.solar;
+  if(msg.includes('soh')||msg.includes('state of health')||msg.includes('health')||msg.includes('grade')) return botKnowledge.soh;
+  if(msg.includes('naac')||msg.includes('report')||msg.includes('accreditation')||msg.includes('nirf')) return botKnowledge.naac;
+  if(msg.includes('price')||msg.includes('pricing')||msg.includes('how much')||msg.includes('cheap')) return botKnowledge.cost;
+  return botKnowledge.default;
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  askBot(msg);
+}
+
+function askBot(msg) {
+  const msgs = document.getElementById('chatMessages');
+  // User bubble
+  msgs.innerHTML += `<div class="chat-msg user"><div class="chat-bubble">${msg}</div></div>`;
+  // Typing indicator
+  const typingId = 'typing-' + Date.now();
+  msgs.innerHTML += `<div class="chat-msg bot" id="${typingId}"><div class="chat-bubble" style="padding:10px 14px"><div class="chat-typing"><div class="chat-dot"></div><div class="chat-dot"></div><div class="chat-dot"></div></div></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    const typingEl = document.getElementById(typingId);
+    if(typingEl) typingEl.remove();
+    const response = getBotResponse(msg);
+    // Convert **bold** markdown
+    const formatted = response.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    msgs.innerHTML += `<div class="chat-msg bot"><div class="chat-bubble">${formatted}</div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900 + Math.random()*600);
+}
+
+/* ─── BATTERY PASSPORT ─── */
+const passportData = [
+  {title:'BAT-421 · Tata Nexon EV', hash:'0x3f8a2d91c4b7e05f1a6...d2c9', chem:'NMC', cap:'40.5 kWh', soh:'85%', cycles:'820', life:'4–6 yrs', oem:'Tata Motors'},
+  {title:'BAT-388 · Ola S1 Pro', hash:'0x7b2c1e84f5a9d03e2b8...c7f4', chem:'LFP', cap:'22.0 kWh', soh:'77%', cycles:'1,140', life:'3–5 yrs', oem:'Ola Electric'},
+  {title:'BAT-502 · Hyundai Kona', hash:'0x9d4e3f72a1b8c56f0e2...a4b1', chem:'NMC', cap:'64.8 kWh', soh:'64%', cycles:'960', life:'2–4 yrs', oem:'Hyundai'},
+];
+function showPassport(idx, btn) {
+  document.querySelectorAll('#passport .bat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const p = passportData[idx];
+  document.getElementById('pp-title').textContent = p.title;
+  document.getElementById('pp-hash').textContent = 'Ledger Hash: '+p.hash+' · Verified ✓';
+  document.getElementById('pp-chem').textContent = p.chem;
+  document.getElementById('pp-cap').textContent = p.cap;
+  document.getElementById('pp-soh').textContent = p.soh;
+  document.getElementById('pp-cycles').textContent = p.cycles;
+  document.getElementById('pp-life').textContent = p.life;
+  document.getElementById('pp-oem').textContent = p.oem;
+}
+
+/* ─── CAMPUS COMPARE CHARTS ─── */
+let compareCharts = {};
+function initCompareCharts() {
+  Object.values(compareCharts).forEach(c=>{try{c.destroy()}catch(e){}});
+  const campuses = ['IIT Delhi\n(ReVolt Pro)', 'IIT Bombay\n(Starter)', 'NIT Trichy\n(Baseline)'];
+  const c1 = document.getElementById('compareChart1');
+  if(c1) compareCharts.c1 = new Chart(c1, {type:'bar', data:{labels:campuses, datasets:[{label:'CO₂ Saved (t/yr)', data:[186,68,0], backgroundColor:['rgba(0,230,118,0.7)','rgba(100,181,246,0.6)','rgba(239,83,80,0.5)'], borderRadius:6, borderWidth:0}]}, options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8fa3b1',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#8fa3b1'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+  const c2 = document.getElementById('compareChart2');
+  if(c2) compareCharts.c2 = new Chart(c2, {type:'bar', data:{labels:campuses, datasets:[{label:'Renewable %', data:[78,51,14], backgroundColor:['rgba(0,230,118,0.7)','rgba(100,181,246,0.6)','rgba(239,83,80,0.5)'], borderRadius:6, borderWidth:0}]}, options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8fa3b1',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},y:{min:0,max:100,ticks:{color:'#8fa3b1'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+}
+
+/* ─── SUSTAINABILITY REPORT ─── */
+function generateReport() {
+  const campus = document.getElementById('reportCampus').value;
+  const period = document.getElementById('reportPeriod').value;
+  const data = {
+    'IIT Delhi': {co2:'186 t',renew:'78%',savings:'₹50.4L',storage:'840 kWh',chargers:'24',naac:'A++', summary:`IIT Delhi has achieved a <strong>78% renewable energy mix</strong> in FY 2024–25, powered by 840 kWh of second-life EV battery storage across 4 campus zones. CO₂ avoided: <strong>186 tonnes</strong>. Diesel usage reduced to zero, saving <strong>₹50.4 lakhs annually</strong>.`},
+    'IIT Bombay': {co2:'68 t',renew:'51%',savings:'₹16.8L',storage:'200 kWh',chargers:'8',naac:'A+', summary:`IIT Bombay achieved a <strong>51% renewable energy mix</strong> in FY 2024–25 through 200 kWh of ReVolt second-life storage. CO₂ avoided: <strong>68 tonnes</strong>. Grid dependency reduced by 38%, saving <strong>₹16.8 lakhs annually</strong>. Phase 2 expansion (500 kWh) planned.`},
+    'NIT Trichy': {co2:'12 t',renew:'14%',savings:'₹2.1L',storage:'0 kWh',chargers:'0',naac:'A', summary:`NIT Trichy currently operates at a <strong>14% renewable energy mix</strong> with no battery storage deployed. Limited savings of ₹2.1L from rooftop solar alone. <strong>Opportunity: 164 tonnes CO₂/year</strong> savings possible with full ReVolt deployment. Upgrade recommended for NAAC improvement.`},
+    'Custom Campus': {co2:'42 t',renew:'38%',savings:'₹12.0L',storage:'120 kWh',chargers:'6',naac:'A', summary:`This custom campus has deployed 120 kWh of second-life battery storage achieving a <strong>38% renewable mix</strong>. CO₂ avoided: <strong>42 tonnes</strong>. Further deployment will significantly improve NAAC Criterion 7 scores.`},
+  };
+  const d = data[campus] || data['IIT Delhi'];
+  document.getElementById('rpt-title').textContent = `${campus} — Carbon Neutrality Progress Report`;
+  document.getElementById('rpt-summary').innerHTML = d.summary;
+  document.getElementById('rpt-kpis').innerHTML = `
+    <div class="report-kpi"><div class="report-kpi-val">${d.co2}</div><div class="report-kpi-label">CO₂ Avoided (yr)</div></div>
+    <div class="report-kpi"><div class="report-kpi-val">${d.renew}</div><div class="report-kpi-label">Renewable Mix</div></div>
+    <div class="report-kpi"><div class="report-kpi-val">${d.savings}</div><div class="report-kpi-label">Annual Savings</div></div>
+    <div class="report-kpi"><div class="report-kpi-val">${d.storage}</div><div class="report-kpi-label">Storage Deployed</div></div>
+    <div class="report-kpi"><div class="report-kpi-val">${d.chargers}</div><div class="report-kpi-label">EV Chargers</div></div>
+    <div class="report-kpi"><div class="report-kpi-val">${d.naac}</div><div class="report-kpi-label">NAAC Green Score</div></div>`;
+}
+
+/* ─── ROI CONFIGURATOR ─── */
+let roiCharts = {};
+function calcROI() {
+  const diesel = +document.getElementById('roiDiesel').value;
+  const grid = +document.getElementById('roiGrid').value;
+  const solar = +document.getElementById('roiSolar').value;
+  const plan = +document.getElementById('roiPlan').value;
+  const subsidy = +document.getElementById('roiSubsidy').value;
+
+  document.getElementById('roiDieselVal').textContent = '₹'+diesel.toLocaleString('en-IN');
+  document.getElementById('roiGridVal').textContent = '₹'+grid.toLocaleString('en-IN');
+  document.getElementById('roiSolarVal').textContent = solar+' kWp';
+
+  const dieselAnnual = diesel * 12;
+  const gridReduction = grid * 0.35 * 12;
+  const v2gRev = solar * 0.015 * 12 * 100;
+  const carbonCred = solar * 0.8 * 18;
+  const planCost = plan * 12;
+  const subsAdjust = planCost * subsidy;
+  const maintenance = 80000;
+  const netAnnual = dieselAnnual + gridReduction + v2gRev + carbonCred - (planCost - subsAdjust) - maintenance;
+  const capex = plan * 36 * (1 - subsidy);
+  const payback = Math.max(0.5, capex / (netAnnual || 1));
+
+  document.getElementById('roiBig').textContent = '₹'+(netAnnual/100000).toFixed(1)+'L';
+  document.getElementById('roiPayback').textContent = Math.min(payback, 10).toFixed(1)+' years';
+  document.getElementById('roiDsav').textContent = '+₹'+(dieselAnnual/100000).toFixed(1)+'L';
+  document.getElementById('roiGsav').textContent = '+₹'+(gridReduction/100000).toFixed(1)+'L';
+  document.getElementById('roiV2g').textContent = '+₹'+(v2gRev/100000).toFixed(1)+'L';
+  document.getElementById('roiCcred').textContent = '+₹'+(carbonCred/100000).toFixed(1)+'L';
+  document.getElementById('roiPlanCost').textContent = '−₹'+((planCost-subsAdjust)/100000).toFixed(1)+'L';
+  document.getElementById('roiNet').textContent = (netAnnual>=0?'+':'')+'₹'+(netAnnual/100000).toFixed(1)+'L';
+
+  // 10-year chart
+  if(roiCharts.line){try{roiCharts.line.destroy()}catch(e){}}
+  const ctx = document.getElementById('roiChart'); if(!ctx) return;
+  const years = Array.from({length:10},(_,i)=>`Yr ${i+1}`);
+  const cumSav = years.map((_,i)=>parseFloat(((netAnnual*(i+1))/100000).toFixed(1)));
+  roiCharts.line = new Chart(ctx,{type:'line',data:{labels:years,datasets:[{label:'Cumulative Savings (₹L)',data:cumSav,borderColor:'#00e676',backgroundColor:'rgba(0,230,118,0.1)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#00e676'}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8fa3b1',font:{size:9}},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:'#8fa3b1'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+
+  if(roiCharts.pie){try{roiCharts.pie.destroy()}catch(e){}}
+  const ctx2 = document.getElementById('roiPieChart'); if(!ctx2) return;
+  roiCharts.pie = new Chart(ctx2,{type:'doughnut',data:{labels:['Diesel Saved','Grid Reduction','V2G Revenue','Carbon Credits'],datasets:[{data:[Math.round(dieselAnnual/1000),Math.round(gridReduction/1000),Math.round(v2gRev/1000),Math.round(carbonCred/1000)],backgroundColor:['#ffc107','#64b5f6','#ce93d8','#00e676'],borderWidth:0}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{color:'#8fa3b1',font:{family:'Syne',size:10}}}}}});
+}
+
+/* ─── UPDATED showPage to handle new pages ─── */
+const _origShowPage = showPage;
+window.showPage = function(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const el = document.getElementById(id);
+  if(el) el.classList.add('active');
+  const idx = ALL_PAGES.indexOf(id);
+  const tabs = document.querySelectorAll('.nav-tab');
+  if(idx>=0 && tabs[idx]) tabs[idx].classList.add('active');
+  if(id==='diagnostics') setTimeout(initDiagCharts,100);
+  if(id==='analytics') setTimeout(initAnalyticsCharts,100);
+  if(id==='marketplace') renderMarket();
+  if(id==='campus') setTimeout(initCampusCharts,100);
+  if(id==='compare') setTimeout(initCompareCharts,100);
+  if(id==='roi') setTimeout(()=>{calcROI();},100);
+  if(id==='report') generateReport();
+};
+
+setTimeout(calcROI, 300);
+// Init landing
+window.showPage('landing');
+</script>
+</body>
+</html>
